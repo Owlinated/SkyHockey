@@ -10,7 +10,7 @@
 #include <src/support/Formatter.h>
 #include "Shader.h"
 
-void checkError(GLuint handle, std::string file_path) {
+void checkShaderError(GLuint handle, std::string file_path) {
   GLint result = GL_FALSE;
   int info_length;
 
@@ -24,6 +24,20 @@ void checkError(GLuint handle, std::string file_path) {
   }
 }
 
+void checkProgramError(GLuint handle, std::string vertex_path, std::string fragment_path) {
+  GLint result = GL_FALSE;
+  int info_length;
+
+  glGetProgramiv(handle, GL_COMPILE_STATUS, &result);
+  glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &info_length);
+  if (info_length > 1) {
+    auto error_message = std::make_unique<char[]>(info_length + 1);
+    glGetProgramInfoLog(handle, info_length, nullptr, error_message.get());
+    std::string message(error_message.get());
+    throw std::runtime_error(Formatter() << "Error while linking " << vertex_path << " and " << fragment_path << ": " << message);
+  }
+}
+
 Shader::Shader(const char *vertex_file_path, const char *fragment_file_path) {
   std::ifstream vertex_stream(vertex_file_path);
   std::stringstream vertex_buffer;
@@ -34,7 +48,7 @@ Shader::Shader(const char *vertex_file_path, const char *fragment_file_path) {
   GLuint vertex_handle = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_handle, 1, &vertex_source, nullptr);
   glCompileShader(vertex_handle);
-  checkError(vertex_handle, std::string(vertex_file_path));
+  checkShaderError(vertex_handle, std::string(vertex_file_path));
 
   std::ifstream fragment_stream(fragment_file_path);
   std::stringstream fragment_buffer;
@@ -45,12 +59,13 @@ Shader::Shader(const char *vertex_file_path, const char *fragment_file_path) {
   GLuint fragment_handle = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment_handle, 1, &fragment_source, nullptr);
   glCompileShader(fragment_handle);
-  checkError(fragment_handle, std::string(fragment_file_path));
+  checkShaderError(fragment_handle, std::string(fragment_file_path));
 
   handle_ = glCreateProgram();
   glAttachShader(handle_, vertex_handle);
   glAttachShader(handle_, fragment_handle);
   glLinkProgram(handle_);
+  checkProgramError(handle_, std::string(vertex_file_path), std::string(fragment_file_path));
 
   glDetachShader(handle_, vertex_handle);
   glDetachShader(handle_, fragment_handle);
@@ -64,10 +79,15 @@ void Shader::use() {
 }
 
 GLint Shader::getUniform(const char *uniform_name) {
-  return glGetUniformLocation(handle_, uniform_name);
+  // TODO cache locations
+  auto result = glGetUniformLocation(handle_, uniform_name);
+  if (result < 0) {
+    throw std::runtime_error(Formatter() << "Could not find uniform: " << std::string(uniform_name));
+  }
+  return result;
 }
 
-void Shader::bind(std::shared_ptr<Texture> &texture, char *uniform_name, int unit_index) {
+void Shader::bind(std::shared_ptr<Texture> &texture, const char *uniform_name, int unit_index) {
   // Activate texture unit and bind the texture
   glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + unit_index));
   texture->bind();

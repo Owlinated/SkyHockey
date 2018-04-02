@@ -4,7 +4,7 @@
 
 Renderer::Renderer() : window_(Window::getInstance()),
                        camera_(Camera::getInstance()),
-                       depth_shader_("DepthRTT.vert", "DepthRTT.frag"),
+                       depth_shader_("Depth.vert", "Depth.frag"),
                        shadow_shader_("ShadowMapping.vert", "ShadowMapping.frag"),
                        light_inv_direction_(0, 3, 0),
                        // Maps to view space, adds depth bias
@@ -28,30 +28,6 @@ Renderer::Renderer() : window_(Window::getInstance()),
   glDrawBuffer(GL_NONE);
 }
 
-void Renderer::renderShadow(RenderEntity &entity) {
-  entity.depth_model_view_projection = depth_projection_matrix_ * depth_view_matrix_ * entity.model;
-  glUniformMatrix4fv(depth_shader_.getUniform("depthMVP"), 1, GL_FALSE, &entity.depth_model_view_projection[0][0]);
-
-  entity.shape->bindShadow();
-  glDrawElements(GL_TRIANGLES, entity.shape->index_count(), GL_UNSIGNED_SHORT, nullptr);
-}
-
-void Renderer::renderScreen(RenderEntity &entity) {
-  auto model_view_projection = camera_.projection * camera_.view * entity.model;
-  auto depth_bias_model_view_projection = bias_matrix * entity.depth_model_view_projection;
-
-  glUniformMatrix4fv(shadow_shader_.getUniform("MVP"), 1, GL_FALSE, &model_view_projection[0][0]);
-  glUniformMatrix4fv(shadow_shader_.getUniform("M"), 1, GL_FALSE, &entity.model[0][0]);
-  glUniformMatrix4fv(shadow_shader_.getUniform("V"), 1, GL_FALSE, &camera_.view[0][0]);
-  glUniformMatrix4fv(shadow_shader_.getUniform("DepthBiasMVP"), 1, GL_FALSE, &depth_bias_model_view_projection[0][0]);
-  glUniform3f(shadow_shader_.getUniform("LightInvDirection_worldspace"), light_inv_direction_.x, light_inv_direction_.y, light_inv_direction_.z);
-  shadow_shader_.bind(entity.texture, const_cast<char *>("myTextureSampler"), 0);
-  shadow_shader_.bind(shadow_texture_, const_cast<char *>("shadowMap"), 1);
-
-  entity.shape->bind();
-  glDrawElements(GL_TRIANGLES, entity.shape->index_count(), GL_UNSIGNED_SHORT, nullptr);
-}
-
 void Renderer::renderFrame(Game &game) {
   glBindFramebuffer(GL_FRAMEBUFFER, shadow_framebuffer_);
   glViewport(0, 0, 1024, 1024);
@@ -61,7 +37,11 @@ void Renderer::renderFrame(Game &game) {
   depth_shader_.use();
 
   for (auto &entity: game.entities) {
-    renderShadow(*entity); // NOLINT
+    entity->depth_model_view_projection = depth_projection_matrix_ * depth_view_matrix_ * entity->model;
+    glUniformMatrix4fv(depth_shader_.getUniform("u.model_view_projection"), 1, GL_FALSE, &entity->depth_model_view_projection[0][0]);
+
+    entity->shape->bindShadow();
+    glDrawElements(GL_TRIANGLES, entity->shape->index_count(), GL_UNSIGNED_SHORT, nullptr);
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -72,7 +52,19 @@ void Renderer::renderFrame(Game &game) {
   shadow_shader_.use();
 
   for (auto &entity: game.entities) {
-    renderScreen(*entity); // NOLINT
+    auto model_view_projection = camera_.projection * camera_.view * entity->model;
+    auto depth_bias_model_view_projection = bias_matrix * entity->depth_model_view_projection;
+
+    glUniformMatrix4fv(shadow_shader_.getUniform("u.model"), 1, GL_FALSE, &entity->model[0][0]);
+    glUniformMatrix4fv(shadow_shader_.getUniform("u.view"), 1, GL_FALSE, &camera_.view[0][0]);
+    glUniformMatrix4fv(shadow_shader_.getUniform("u.model_view_projection"), 1, GL_FALSE, &model_view_projection[0][0]);
+    glUniformMatrix4fv(shadow_shader_.getUniform("u.depth_bias_model_view_projection"), 1, GL_FALSE, &depth_bias_model_view_projection[0][0]);
+    glUniform3f(shadow_shader_.getUniform("u.light_inv_direction_worldspace"), light_inv_direction_.x, light_inv_direction_.y, light_inv_direction_.z);
+    shadow_shader_.bind(entity->texture, "u_color_texture", 0);
+    shadow_shader_.bind(shadow_texture_, "u_shadow_map", 1);
+
+    entity->shape->bind();
+    glDrawElements(GL_TRIANGLES, entity->shape->index_count(), GL_UNSIGNED_SHORT, nullptr);
   }
 
   glfwSwapBuffers(window_.handle());
