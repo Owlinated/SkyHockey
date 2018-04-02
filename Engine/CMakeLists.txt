@@ -24,7 +24,6 @@ add_definitions(
     -D_CRT_SECURE_NO_WARNINGS
 )
 
-# Tutorial 16
 add_executable(${PROJECT_NAME}
         src/Main.cpp
         src/renderer/material/Shader.cpp src/renderer/material/Shader.h
@@ -34,20 +33,11 @@ add_executable(${PROJECT_NAME}
         src/support/Window.cpp src/support/Window.h
         src/support/Formatter.h
         src/renderer/geometry/Shape.cpp src/renderer/geometry/Shape.h
-        src/renderer/VisualDebug.cpp src/renderer/VisualDebug.h
         src/game/Puck.cpp src/game/Puck.h
         src/game/Striker.cpp src/game/Striker.h
         src/renderer/Renderer.cpp src/renderer/Renderer.h
         src/game/Game.cpp src/game/Game.h
         src/renderer/RenderEntity.h src/game/GameEntity.h)
-
-# Copy shaders to build directory
-add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS ${destination}
-    COMMENT "Copy shaders from ${CMAKE_SOURCE_DIR}/res to ${CMAKE_CURRENT_BINARY_DIR}"
-)
 
 target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARY}
@@ -55,3 +45,10 @@ target_link_libraries(${PROJECT_NAME}
     glew
     tiny
 )
+
+# Copy shaders to build directory
+add_custom_target(copy_resources ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Copy Resources")
+
+add_dependencies(${PROJECT_NAME} copy_resources)

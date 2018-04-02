@@ -33,10 +33,12 @@ Shape::Shape(std::vector<unsigned short> &indices,
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
   glBindVertexArray(0);
+  /* Don't delete so RenderDoc can find them
   glDeleteBuffers(1, &index_buffer);
   glDeleteBuffers(1, &vertex_buffer);
   glDeleteBuffers(1, &texture_buffer);
   glDeleteBuffers(1, &normal_buffer);
+   */
 }
 
 void Shape::bind() {

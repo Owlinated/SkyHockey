@@ -1,11 +1,9 @@
 #version 330 core
 
-// Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV;
 layout(location = 2) in vec3 vertexNormal_modelspace;
 
-// Output data ; will be interpolated for each fragment.
 out vec2 UV;
 out vec3 Position_worldspace;
 out vec3 Normal_cameraspace;
@@ -13,35 +11,25 @@ out vec3 EyeDirection_cameraspace;
 out vec3 LightDirection_cameraspace;
 out vec4 ShadowCoord;
 
-// Values that stay constant for the whole mesh.
 uniform mat4 MVP;
 uniform mat4 V;
 uniform mat4 M;
 uniform vec3 LightInvDirection_worldspace;
 uniform mat4 DepthBiasMVP;
 
+void main() {
+    vec4 position4_modelspace = vec4(vertexPosition_modelspace, 1);
+    vec4 normal4_modelspace = vec4(vertexNormal_modelspace, 0);
+    vec4 light_inv4_worldspace = vec4(LightInvDirection_worldspace, 0);
 
-void main(){
-
-	// Output position of the vertex, in clip space : MVP * position
-	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
-	
-	ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace,1);
-	
-	// Position of the vertex, in worldspace : M * position
-	Position_worldspace = (M * vec4(vertexPosition_modelspace,1)).xyz;
-	
-	// Vector that goes from the vertex to the camera, in camera space.
-	// In camera space, the camera is at the origin (0,0,0).
-	EyeDirection_cameraspace = vec3(0,0,0) - ( V * M * vec4(vertexPosition_modelspace,1)).xyz;
-
-	// Vector that goes from the vertex to the light, in camera space
-	LightDirection_cameraspace = (V*vec4(LightInvDirection_worldspace,0)).xyz;
-	
-	// Normal of the the vertex, in camera space
-	Normal_cameraspace = ( V * M * vec4(vertexNormal_modelspace,0)).xyz; // Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not.
-	
-	// UV of the vertex. No special space for this one.
+	gl_Position =  MVP * position4_modelspace;
 	UV = vertexUV;
+	ShadowCoord = DepthBiasMVP * position4_modelspace;
+	Position_worldspace = (M * position4_modelspace).xyz;
+	EyeDirection_cameraspace = vec3(0, 0, 0) - (V * M * position4_modelspace).xyz;
+	LightDirection_cameraspace = (V * light_inv4_worldspace).xyz;
+
+	// FIXME does not handle model scaling (use inverse tranpose instead)
+	Normal_cameraspace = (V * M * normal4_modelspace).xyz;
 }
 

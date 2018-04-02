@@ -21,11 +21,11 @@ class Renderer {
   std::shared_ptr<Texture> shadow_texture_;
   GLuint shadow_framebuffer_;
 
-  glm::vec3 light_inverse_direction_;
+  glm::vec3 light_inv_direction_;
   glm::mat4 bias_matrix, depth_projection_matrix_, depth_view_matrix_;
 
-  void render_shadow(RenderEntity entity);
-  void render_screen(RenderEntity entity);
+  void renderShadow(RenderEntity& entity);
+  void renderScreen(RenderEntity& entity);
  public:
   Renderer();
   void renderFrame(Game &game);
