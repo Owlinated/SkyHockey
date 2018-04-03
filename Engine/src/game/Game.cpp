@@ -1,27 +1,27 @@
 #include <glm/ext.hpp>
 #include <iostream>
+#include <src/renderer/material/TextureDDS.h>
 #include "Game.h"
 
-Game::Game() :
-    window_(Window::getInstance()),
-    obj_loader_("geometry.obj"),
-    camera_(Camera::getInstance()) {
-  auto texture = Texture::loadDds("uvmap.DDS");
+Game::Game(std::shared_ptr<Window> window) :
+    window_(std::move(window)),
+    obj_loader_("geometry.obj") {
+  auto texture = std::make_shared<TextureDDS>("uvmap.DDS");
   auto striker_shape = obj_loader_.loadShape("Striker");
   auto puck_shape = obj_loader_.loadShape("Puck");
 
-  table = std::make_shared<GameEntity>(obj_loader_.loadShape("Table"), texture);
-  puck = std::make_shared<Puck>(puck_shape, texture);
-  striker_player = std::make_shared<Striker>(striker_shape, texture, glm::vec3(0, 0.1, 1), 0.05f);
-  striker_opponent = std::make_shared<Striker>(striker_shape, texture, glm::vec3(0, 0, -1), 0.5f);
+  table = std::make_unique<GameEntity>(obj_loader_.loadShape("Table"), texture);
+  puck = std::make_unique<Puck>(puck_shape, texture);
+  striker_player = std::make_unique<Striker>(striker_shape, texture, glm::vec3(0, 0.1, 1), 0.05f);
+  striker_opponent = std::make_unique<Striker>(striker_shape, texture, glm::vec3(0, 0, -1), 0.5f);
 
-  entities.emplace_back(table);
-  entities.emplace_back(std::static_pointer_cast<GameEntity>(puck));
-  entities.emplace_back(std::static_pointer_cast<GameEntity>(striker_player));
-  entities.emplace_back(std::static_pointer_cast<GameEntity>(striker_opponent));
+  entities.emplace_back(table.get());
+  entities.emplace_back(puck.get());
+  entities.emplace_back(striker_player.get());
+  entities.emplace_back(striker_opponent.get());
 }
 
-void striker_puck_collision_test(std::shared_ptr<Striker> &striker, std::shared_ptr<Puck> &puck) {
+void striker_puck_collision_test(std::unique_ptr<Striker> &striker, std::unique_ptr<Puck> &puck) {
   const float radius = 0.08f;
   auto location_difference = puck->location - striker->location;
   float distance = glm::length(location_difference);
@@ -41,7 +41,7 @@ void striker_puck_collision_test(std::shared_ptr<Striker> &striker, std::shared_
   }
 }
 
-void goal_test(std::shared_ptr<Puck> &puck) {
+void goal_test(std::unique_ptr<Puck> &puck) {
   if (puck->location.z < -1.2f) {
     std::cout << "Point for player!" << std::endl;
     puck->location = glm::vec3(0, 0, -0.8f);
@@ -56,9 +56,9 @@ void goal_test(std::shared_ptr<Puck> &puck) {
 
 void Game::update(float deltaTime) {
   const auto mouse_speed = 0.001f;
-  double mouse_x, mouse_y, mid_x = window_.width() / 2, mid_y = window_.height() / 2;
-  glfwGetCursorPos(window_.handle(), &mouse_x, &mouse_y);
-  glfwSetCursorPos(window_.handle(), mid_x, mid_y);
+  double mouse_x, mouse_y, mid_x = window_->width / 2, mid_y = window_->height / 2;
+  glfwGetCursorPos(window_->handle, &mouse_x, &mouse_y);
+  glfwSetCursorPos(window_->handle, mid_x, mid_y);
 
   // update player movement
   striker_player->target_location += glm::vec3((mouse_x - mid_x) * mouse_speed, 0, (mouse_y - mid_y) * mouse_speed);
@@ -74,7 +74,7 @@ void Game::update(float deltaTime) {
   }
 
   // update entities
-  camera_.update(deltaTime);
+  camera.update(deltaTime);
   for (auto &entity: entities) {
     entity->update(deltaTime);
   }

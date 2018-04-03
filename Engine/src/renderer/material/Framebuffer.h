@@ -10,9 +10,9 @@ class Framebuffer {
   GLuint handle_;
  public:
   explicit Framebuffer(GLuint handle, std::shared_ptr<Texture> texture);
+  Framebuffer(int width, int height, bool depth, bool mipmap);
   std::shared_ptr<Texture> texture;
   void bind();
-  static std::shared_ptr<Framebuffer> create(int width, int height, bool depth, bool mipmap);
 };
 
 #endif //ENGINE_FRAMEBUFFER_H

@@ -16,15 +16,14 @@
 
 class Renderer {
  private:
-  Window &window_;
-  Camera &camera_;
+  std::shared_ptr<Window> window_;
   Shader depth_shader_, shadow_shader_;
-  std::shared_ptr<Framebuffer> depth_framebuffer_;
+  Framebuffer depth_framebuffer_;
 
   glm::vec3 light_inv_direction_;
   glm::mat4 bias_matrix, depth_projection_matrix_, depth_view_matrix_;
  public:
-  Renderer();
+  Renderer(std::shared_ptr<Window> window);
   void renderFrame(Game &game);
 };
 

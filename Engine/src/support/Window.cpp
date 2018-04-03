@@ -20,33 +20,28 @@ Window::Window() {
 #ifdef FULLSCREEN
   auto monitor = glfwGetPrimaryMonitor();
   auto video_mode = glfwGetVideoMode(monitor);
-  handle_ = glfwCreateWindow(video_mode->width, video_mode->height, "AirHockey", monitor, nullptr);
+  handle = glfwCreateWindow(video_mode->width, video_mode->height, "AirHockey", monitor, nullptr);
 #else
-  handle_ = glfwCreateWindow(1280, 720, "AirHockey", nullptr, nullptr);
+  handle = glfwCreateWindow(1280, 720, "AirHockey", nullptr, nullptr);
 #endif
 
-  if(handle_ == nullptr){
+  if(handle == nullptr){
     throw std::runtime_error("Failed to open GLFW window.");
   }
-  glfwMakeContextCurrent(handle_);
+  glfwMakeContextCurrent(handle);
 
-  glfwGetFramebufferSize(handle_, &width_, &height_);
+  glfwGetFramebufferSize(handle, &width, &height);
 
-  glfwSetInputMode(handle_, GLFW_STICKY_KEYS, GL_TRUE);
-  glfwSetInputMode(handle_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(handle, GLFW_STICKY_KEYS, GL_TRUE);
+  glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   glfwPollEvents();
-  glfwSetCursorPos(handle_, width_/2, height_/2);
+  glfwSetCursorPos(handle, width/2, height/2);
 
   glewExperimental = static_cast<GLboolean>(true);
   if (glewInit() != GLEW_OK) {
     throw std::runtime_error("Failed to initialize GLEW.");
   }
-}
-
-Window& Window::getInstance() {
-  static Window instance;
-  return instance;
 }
 
 

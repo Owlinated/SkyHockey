@@ -19,9 +19,9 @@ void MessageCallback(GLenum source, GLenum type, GLuint id,
 
 int main() {
   try {
-    auto window = Window::getInstance();
-    Renderer renderer;
-    Game game;
+    auto window = std::make_shared<Window>();
+    Renderer renderer(window);
+    Game game(window);
 
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -29,8 +29,8 @@ int main() {
 
     double lastFrameTime = glfwGetTime();
 
-    while (glfwGetKey(window.handle(), GLFW_KEY_ESCAPE) != GLFW_PRESS
-        && glfwWindowShouldClose(window.handle()) == 0) {
+    while (glfwGetKey(window->handle, GLFW_KEY_ESCAPE) != GLFW_PRESS
+        && glfwWindowShouldClose(window->handle) == 0) {
       // Get elapsed time
       auto currentFrame = glfwGetTime();
       auto deltaTime = static_cast<float>(currentFrame - lastFrameTime);

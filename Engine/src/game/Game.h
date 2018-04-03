@@ -9,16 +9,15 @@
 
 class Game {
  private:
-  Window &window_;
+  std::shared_ptr<Window> window_;
   ObjLoader obj_loader_;
-  Camera &camera_;
-
-  std::shared_ptr<GameEntity> table, debug_puck;
-  std::shared_ptr<Puck> puck;
-  std::shared_ptr<Striker> striker_player, striker_opponent;
+  std::unique_ptr<GameEntity> table;
+  std::unique_ptr<Puck> puck;
+  std::unique_ptr<Striker> striker_player, striker_opponent;
  public:
-  Game();
-  std::vector<std::shared_ptr<GameEntity>> entities;
+  explicit Game(std::shared_ptr<Window> window);
+  std::vector<GameEntity*> entities;
+  Camera camera;
   void update(float deltaTime);
 };
 

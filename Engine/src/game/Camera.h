@@ -5,14 +5,12 @@
 
 class Camera {
  private:
-  Camera();
   glm::vec3 position_, look_at_, up_;
   float fov_;
  public:
+  Camera();
   void update(float delta_time);
   glm::mat4 view, projection;
-  static Camera& getInstance();
 };
-
 
 #endif

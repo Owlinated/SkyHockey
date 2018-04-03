@@ -5,16 +5,14 @@
 #include <GL/glew.h>
 
 class Texture {
- private:
-  GLuint handle_;
-  int width_, height_;
+ protected:
+  Texture();
+  void init();
  public:
   explicit Texture(GLuint handle);
-  int width() const { return width_; }
-  int height() const { return height_; }
-  GLuint handle() const { return handle_; }
+  GLuint handle;
+  int width, height;
   void bind();
-  static std::shared_ptr<Texture> loadDds(const char * image_path);
 };
 
 #endif //TEXTURE_HPP

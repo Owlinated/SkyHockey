@@ -5,15 +5,10 @@
 #include <GLFW/glfw3.h>
 
 class Window {
- private:
-    Window();
-    int width_, height_;
-    GLFWwindow* handle_;
  public:
-    int width() const { return width_; }
-    int height() const { return height_; }
-    GLFWwindow* handle() const {return handle_; }
-    static Window& getInstance();
+    Window();
+    int width, height;
+    GLFWwindow* handle;
 };
 
 #endif //ENGINE_WINDOW_H

@@ -61,26 +61,26 @@ Shader::Shader(const char *vertex_file_path, const char *fragment_file_path) {
   glCompileShader(fragment_handle);
   checkShaderError(fragment_handle, std::string(fragment_file_path));
 
-  handle_ = glCreateProgram();
-  glAttachShader(handle_, vertex_handle);
-  glAttachShader(handle_, fragment_handle);
-  glLinkProgram(handle_);
-  checkProgramError(handle_, std::string(vertex_file_path), std::string(fragment_file_path));
+  handle = glCreateProgram();
+  glAttachShader(handle, vertex_handle);
+  glAttachShader(handle, fragment_handle);
+  glLinkProgram(handle);
+  checkProgramError(handle, std::string(vertex_file_path), std::string(fragment_file_path));
 
-  glDetachShader(handle_, vertex_handle);
-  glDetachShader(handle_, fragment_handle);
+  glDetachShader(handle, vertex_handle);
+  glDetachShader(handle, fragment_handle);
 
   glDeleteShader(vertex_handle);
   glDeleteShader(fragment_handle);
 }
 
 void Shader::use() {
-  glUseProgram(handle_);
+  glUseProgram(handle);
 }
 
 GLint Shader::getUniform(const char *uniform_name) {
   // TODO cache locations
-  auto result = glGetUniformLocation(handle_, uniform_name);
+  auto result = glGetUniformLocation(handle, uniform_name);
   if (result < 0) {
     throw std::runtime_error(Formatter() << "Could not find uniform: " << std::string(uniform_name));
   }

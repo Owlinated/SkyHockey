@@ -10,8 +10,3 @@ void Camera::update(float delta_time) {
   projection = glm::perspective(glm::radians(fov_), ratio, near_clipping, far_clipping);
   view = glm::lookAt(position_, look_at_, up_);
 }
-
-Camera &Camera::getInstance() {
-  static Camera instance;
-  return instance;
-}

@@ -4,13 +4,9 @@ Framebuffer::Framebuffer(GLuint handle, std::shared_ptr<Texture> texture)
     : handle_(handle), texture(std::move(texture)) {
 }
 
-void Framebuffer::bind() {
+Framebuffer::Framebuffer(int width, int height, bool depth, bool mipmap) {
+  glGenFramebuffers(1, &handle_);
   glBindFramebuffer(GL_FRAMEBUFFER, handle_);
-}
-std::shared_ptr<Framebuffer> Framebuffer::create(int width, int height, bool depth, bool mipmap) {
-  GLuint handle;
-  glGenFramebuffers(1, &handle);
-  glBindFramebuffer(GL_FRAMEBUFFER, handle);
 
   if (depth) {
     GLuint depth_buffer;
@@ -37,7 +33,9 @@ std::shared_ptr<Framebuffer> Framebuffer::create(int width, int height, bool dep
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture_handle, 0);
 
-  auto texture = std::make_shared<Texture>(texture_handle);
-  return std::make_shared<Framebuffer>(handle, texture);
+  texture = std::make_shared<Texture>(texture_handle);
 }
 
+void Framebuffer::bind() {
+  glBindFramebuffer(GL_FRAMEBUFFER, handle_);
+}
