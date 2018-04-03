@@ -13,6 +13,7 @@ include_directories(
     lib/glew-2.1.0/include/
     lib/glm-0.9.8.5/
     lib/tiny-1.1.1/
+    lib/lodepng/
     .
 )
 
@@ -37,13 +38,14 @@ add_executable(${PROJECT_NAME}
         src/game/Striker.cpp src/game/Striker.h
         src/renderer/Renderer.cpp src/renderer/Renderer.h
         src/game/Game.cpp src/game/Game.h
-        src/renderer/RenderEntity.h src/game/GameEntity.h src/renderer/material/Framebuffer.cpp src/renderer/material/Framebuffer.h src/renderer/material/TextureDDS.cpp src/renderer/material/TextureDDS.h)
+        src/renderer/RenderEntity.h src/game/GameEntity.h src/renderer/material/Framebuffer.cpp src/renderer/material/Framebuffer.h src/renderer/material/TexturePNG.cpp src/renderer/material/TexturePNG.h)
 
 target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARY}
     glfw
     glew
     tiny
+    lodepng
 )
 
 # Copy shaders to build directory

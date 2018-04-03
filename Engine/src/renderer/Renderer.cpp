@@ -6,7 +6,7 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     window_(window),
     depth_shader_("Depth.vert", "Depth.frag"),
     shadow_shader_("ShadowMapping.vert", "ShadowMapping.frag"),
-    light_inv_direction_(0, 3, 0),
+    light_inv_direction_(0, 2, 0),
     // Maps to view space, adds depth bias
     bias_matrix(
         0.5, 0.0, 0.0, 0.0,
@@ -14,7 +14,7 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
         0.0, 0.0, 0.49, 0.0,
         0.5, 0.5, 0.5, 1.0
     ),
-    depth_projection_matrix_(glm::perspective<float>(45.0f, 1.0f, 2.0f, 4.0f)),
+    depth_projection_matrix_(glm::perspective<float>(glm::radians(70.0f), 1.0f, 1.0f, 4.0f)),
     depth_view_matrix_(glm::lookAt(light_inv_direction_, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0))),
     depth_framebuffer_(1024, 1024, true, false) {
   glEnable(GL_DEPTH_TEST);

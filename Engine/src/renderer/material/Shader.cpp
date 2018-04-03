@@ -25,10 +25,8 @@ void checkShaderError(GLuint handle, std::string file_path) {
 }
 
 void checkProgramError(GLuint handle, std::string vertex_path, std::string fragment_path) {
-  GLint result = GL_FALSE;
   int info_length;
 
-  glGetProgramiv(handle, GL_COMPILE_STATUS, &result);
   glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &info_length);
   if (info_length > 1) {
     auto error_message = std::make_unique<char[]>(info_length + 1);

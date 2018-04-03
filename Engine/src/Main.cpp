@@ -20,12 +20,13 @@ void MessageCallback(GLenum source, GLenum type, GLuint id,
 int main() {
   try {
     auto window = std::make_shared<Window>();
-    Renderer renderer(window);
-    Game game(window);
 
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback((GLDEBUGPROC) MessageCallback, nullptr);
+
+    Renderer renderer(window);
+    Game game(window);
 
     double lastFrameTime = glfwGetTime();
 

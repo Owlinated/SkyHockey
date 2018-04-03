@@ -1,19 +1,23 @@
 #include <glm/ext.hpp>
 #include <iostream>
-#include <src/renderer/material/TextureDDS.h>
+#include <src/renderer/material/TexturePNG.h>
 #include "Game.h"
 
 Game::Game(std::shared_ptr<Window> window) :
     window_(std::move(window)),
     obj_loader_("geometry.obj") {
-  auto texture = std::make_shared<TextureDDS>("uvmap.DDS");
+  auto table_texture = std::make_shared<TexturePNG>("table.png", true);
+  auto striker_texture = std::make_shared<TexturePNG>("striker.png", true);
+  auto puck_texture = std::make_shared<TexturePNG>("puck.png", true);
+
+  auto table_shape = obj_loader_.loadShape("Table");
   auto striker_shape = obj_loader_.loadShape("Striker");
   auto puck_shape = obj_loader_.loadShape("Puck");
 
-  table = std::make_unique<GameEntity>(obj_loader_.loadShape("Table"), texture);
-  puck = std::make_unique<Puck>(puck_shape, texture);
-  striker_player = std::make_unique<Striker>(striker_shape, texture, glm::vec3(0, 0.1, 1), 0.05f);
-  striker_opponent = std::make_unique<Striker>(striker_shape, texture, glm::vec3(0, 0, -1), 0.5f);
+  table = std::make_unique<GameEntity>(table_shape, table_texture);
+  puck = std::make_unique<Puck>(puck_shape, puck_texture);
+  striker_player = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, 1), 0.05f);
+  striker_opponent = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, -1), 0.5f);
 
   entities.emplace_back(table.get());
   entities.emplace_back(puck.get());

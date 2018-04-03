@@ -8,8 +8,7 @@
 
 Texture::Texture() = default;
 
-Texture::Texture(GLuint handle) {
-  handle = handle;
+Texture::Texture(GLuint handle): handle(handle) {
   init();
 }
 
