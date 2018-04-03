@@ -23,9 +23,6 @@ class Renderer {
 
   glm::vec3 light_inv_direction_;
   glm::mat4 bias_matrix, depth_projection_matrix_, depth_view_matrix_;
-
-  void renderShadow(RenderEntity& entity);
-  void renderScreen(RenderEntity& entity);
  public:
   Renderer();
   void renderFrame(Game &game);

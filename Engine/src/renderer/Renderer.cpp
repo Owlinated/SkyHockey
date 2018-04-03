@@ -16,16 +16,26 @@ Renderer::Renderer() : window_(Window::getInstance()),
                        ),
                        depth_projection_matrix_(glm::perspective<float>(45.0f, 1.0f, 2.0f, 4.0f)),
                        depth_view_matrix_(glm::lookAt(light_inv_direction_, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0))) {
-  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
 
+  int width = 1024, height = 1024;
+
+  // Generate shadow framebuffer
   glGenFramebuffers(1, &shadow_framebuffer_);
   glBindFramebuffer(GL_FRAMEBUFFER, shadow_framebuffer_);
-  shadow_texture_ = Texture::createDepthTexture(1024, 1024);
-  glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadow_texture_->handle(), 0);
-  glDrawBuffer(GL_NONE);
+
+  // Bind depth buffer
+  GLuint depth_buffer;
+  glGenRenderbuffers(1, &depth_buffer);
+  glBindRenderbuffer(GL_RENDERBUFFER, depth_buffer);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_buffer);
+
+  // Bind texture
+  shadow_texture_ = Texture::createDepthTexture(width, height);
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, shadow_texture_->handle(), 0);
 }
 
 void Renderer::renderFrame(Game &game) {
