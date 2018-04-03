@@ -15,7 +15,6 @@ class Texture {
   GLuint handle() const { return handle_; }
   void bind();
   static std::shared_ptr<Texture> loadDds(const char * image_path);
-  static std::shared_ptr<Texture> createDepthTexture(int width, int height);
 };
 
 #endif //TEXTURE_HPP

@@ -12,7 +12,7 @@ Game::Game() :
 
   table = std::make_shared<GameEntity>(obj_loader_.loadShape("Table"), texture);
   puck = std::make_shared<Puck>(puck_shape, texture);
-  striker_player = std::make_shared<Striker>(striker_shape, texture, glm::vec3(0, 0, 1), 0.05f);
+  striker_player = std::make_shared<Striker>(striker_shape, texture, glm::vec3(0, 0.1, 1), 0.05f);
   striker_opponent = std::make_shared<Striker>(striker_shape, texture, glm::vec3(0, 0, -1), 0.5f);
 
   entities.emplace_back(table);

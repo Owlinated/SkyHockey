@@ -10,6 +10,7 @@
 #include <src/game/Camera.h>
 #include <src/renderer/material/Texture.h>
 #include <src/game/Game.h>
+#include <src/renderer/material/Framebuffer.h>
 #include "src/support/Window.h"
 #include "RenderEntity.h"
 
@@ -18,8 +19,7 @@ class Renderer {
   Window &window_;
   Camera &camera_;
   Shader depth_shader_, shadow_shader_;
-  std::shared_ptr<Texture> shadow_texture_;
-  GLuint shadow_framebuffer_;
+  std::shared_ptr<Framebuffer> depth_framebuffer_;
 
   glm::vec3 light_inv_direction_;
   glm::mat4 bias_matrix, depth_projection_matrix_, depth_view_matrix_;

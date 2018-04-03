@@ -37,7 +37,7 @@ add_executable(${PROJECT_NAME}
         src/game/Striker.cpp src/game/Striker.h
         src/renderer/Renderer.cpp src/renderer/Renderer.h
         src/game/Game.cpp src/game/Game.h
-        src/renderer/RenderEntity.h src/game/GameEntity.h)
+        src/renderer/RenderEntity.h src/game/GameEntity.h src/renderer/material/Framebuffer.cpp src/renderer/material/Framebuffer.h)
 
 target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARY}
