@@ -6,7 +6,7 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     window_(window),
     depth_shader_("Depth.vert", "Depth.frag"),
     shadow_shader_("ShadowMapping.vert", "ShadowMapping.frag"),
-    light_inv_direction_(0, 2, 0),
+    light_position_(0, 2, 0),
     // Maps to view space, adds depth bias
     bias_matrix(
         0.5, 0.0, 0.0, 0.0,
@@ -15,7 +15,7 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
         0.5, 0.5, 0.5, 1.0
     ),
     depth_projection_matrix_(glm::perspective<float>(glm::radians(70.0f), 1.0f, 1.0f, 4.0f)),
-    depth_view_matrix_(glm::lookAt(light_inv_direction_, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0))),
+    depth_view_matrix_(glm::lookAt(light_position_, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0))),
     depth_framebuffer_(1024, 1024, true, false) {
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -59,10 +59,10 @@ void Renderer::renderFrame(Game &game) {
                        1,
                        GL_FALSE,
                        &depth_bias_model_view_projection[0][0]);
-    glUniform3f(shadow_shader_.getUniform("u.light_inv_direction_worldspace"),
-                light_inv_direction_.x,
-                light_inv_direction_.y,
-                light_inv_direction_.z);
+    glUniform3f(shadow_shader_.getUniform("u.light_position_worldspace"),
+                light_position_.x,
+                light_position_.y,
+                light_position_.z);
     shadow_shader_.bind(entity->texture, "u_color_texture", 0);
     shadow_shader_.bind(depth_framebuffer_.texture, "u_shadow_map", 1);
 

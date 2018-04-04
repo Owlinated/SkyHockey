@@ -48,14 +48,13 @@ void striker_puck_collision_test(std::unique_ptr<Striker> &striker, std::unique_
 void goal_test(std::unique_ptr<Puck> &puck) {
   if (puck->location.z < -1.2f) {
     std::cout << "Point for player!" << std::endl;
-    puck->location = glm::vec3(0, 0, -0.8f);
+    puck->velocity = glm::vec3(0, 0, -0.3f);
+    puck->location = glm::vec3();
   } else if (puck->location.z > 1.2f) {
     std::cout << "Point for opponent!" << std::endl;
-    puck->location = glm::vec3(0, 0, 0.8f);
-  } else {
-    return;
+    puck->velocity = glm::vec3(0, 0, 0.3f);
+    puck->location = glm::vec3();
   }
-  puck->velocity = glm::vec3();
 }
 
 void Game::update(float deltaTime) {

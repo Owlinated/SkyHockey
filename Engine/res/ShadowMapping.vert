@@ -5,12 +5,12 @@ uniform struct Uniforms {
     mat4 view;
     mat4 model_view_projection;
     mat4 depth_bias_model_view_projection;
-    vec3 light_inv_direction_worldspace;
+    vec3 light_position_worldspace;
 } u;
 
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec2 vertexUV;
-layout(location = 2) in vec3 vertexNormal_modelspace;
+layout(location = 0) in vec3 in_position_modelspace;
+layout(location = 1) in vec2 in_texture_coords;
+layout(location = 2) in vec3 in_normal_modelspace;
 
 out struct VertexData {
     vec2 texture_coords;
@@ -21,17 +21,18 @@ out struct VertexData {
 } v;
 
 void main() {
-    vec4 position4_modelspace = vec4(vertexPosition_modelspace, 1);
-    vec4 normal4_modelspace = vec4(vertexNormal_modelspace, 0);
-    vec4 light_inv4_worldspace = vec4(u.light_inv_direction_worldspace, 0);
+    vec4 position_modelspace = vec4(in_position_modelspace, 1);
+    vec4 position_worldspace = u.model * position_modelspace;
+    vec4 normal_modelspace = vec4(in_normal_modelspace, 0);
+    vec4 light_position_worldspace = vec4(u.light_position_worldspace, 1);
 
-	gl_Position =  u.model_view_projection * position4_modelspace;
-	v.texture_coords = vertexUV;
-	v.shadow_coords = u.depth_bias_model_view_projection * position4_modelspace;
-	v.camera_direction_cameraspace = vec3(0, 0, 0) - (u.view * u.model * position4_modelspace).xyz;
-	v.light_direction_cameraspace = (u.view * light_inv4_worldspace).xyz;
+	gl_Position =  u.model_view_projection * position_modelspace;
+	v.texture_coords = in_texture_coords;
+	v.shadow_coords = u.depth_bias_model_view_projection * position_modelspace;
+	v.camera_direction_cameraspace = vec3(0, 0, 0) - (u.view * position_worldspace).xyz;
+	v.light_direction_cameraspace = (u.view * (light_position_worldspace - position_modelspace)).xyz;
 
 	// FIXME does not handle model scaling (use inverse tranpose instead)
-	v.normal_cameraspace = (u.view * u.model * normal4_modelspace).xyz;
+	v.normal_cameraspace = (u.view * u.model * normal_modelspace).xyz;
 }
 

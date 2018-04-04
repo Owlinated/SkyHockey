@@ -20,7 +20,7 @@ class Renderer {
   Shader depth_shader_, shadow_shader_;
   Framebuffer depth_framebuffer_;
 
-  glm::vec3 light_inv_direction_;
+  glm::vec3 light_position_;
   glm::mat4 bias_matrix, depth_projection_matrix_, depth_view_matrix_;
  public:
   Renderer(std::shared_ptr<Window> window);
