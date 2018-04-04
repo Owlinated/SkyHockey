@@ -15,9 +15,10 @@ Game::Game(std::shared_ptr<Window> window) :
   auto puck_shape = obj_loader_.loadShape("Puck");
 
   table = std::make_unique<GameEntity>(table_shape, table_texture);
-  puck = std::make_unique<Puck>(puck_shape, puck_texture);
   striker_player = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, 1), 0.05f);
   striker_opponent = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, -1), 0.5f);
+  puck = std::make_unique<Puck>(puck_shape, puck_texture);
+  puck->velocity = glm::vec3(0, 0, -0.3f);
 
   entities.emplace_back(table.get());
   entities.emplace_back(puck.get());
@@ -73,7 +74,7 @@ void Game::update(float deltaTime) {
   } else if (puck->location.z > 0 || glm::distance2(striker_opponent->location, puck->location) > 0.2f) {
     striker_opponent->target_location = glm::vec3(puck->location.x / (puck->location.z + 2.2), 0, -1);
   } else if (glm::dot(puck->velocity, location_difference) < 0.1f) {
-    striker_opponent->target_location = striker_opponent->location + 0.3 * location_difference;
+    striker_opponent->target_location = striker_opponent->location + 0.4 * location_difference;
   }
 
   // update entities

@@ -7,11 +7,11 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     depth_shader_("Depth.vert", "Depth.frag"),
     shadow_shader_("ShadowMapping.vert", "ShadowMapping.frag"),
     light_position_(0, 2, 0),
-    // Maps to view space, adds depth bias
+    // Maps coordinates to screen space
     bias_matrix(
         0.5, 0.0, 0.0, 0.0,
         0.0, 0.5, 0.0, 0.0,
-        0.0, 0.0, 0.49, 0.0,
+        0.0, 0.0, 0.5, 0.0,
         0.5, 0.5, 0.5, 1.0
     ),
     depth_projection_matrix_(glm::perspective<float>(glm::radians(70.0f), 1.0f, 1.0f, 4.0f)),
