@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include "GameEntity.h"
 
-class Puck: public GameEntity {
+class Puck : public GameEntity {
  private:
   void updateVelocity(float delta_time);
   bool corner_collision_test();
@@ -15,6 +15,7 @@ class Puck: public GameEntity {
   glm::vec3 velocity;
   Puck(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture);
   void update(float delta_time) override;
+  glm::vec3 getVelocity() override { return velocity; };
 };
 
 #endif //ENGINE_PUCK_H

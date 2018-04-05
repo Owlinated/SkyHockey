@@ -4,7 +4,7 @@ uniform struct Uniforms {
     mat4 model;
     mat4 view;
     mat4 model_view_projection;
-    mat4 depth_bias_model_view_projection;
+    mat4 depth_window_model_view_projection;
     vec3 light_position_worldspace;
 } u;
 
@@ -28,7 +28,7 @@ void main() {
 
 	gl_Position =  u.model_view_projection * position_modelspace;
 	v.texture_coords = in_texture_coords;
-	v.shadow_coords = u.depth_bias_model_view_projection * position_modelspace;
+	v.shadow_coords = u.depth_window_model_view_projection * position_modelspace;
 	v.camera_direction_cameraspace = vec3(0, 0, 0) - (u.view * position_worldspace).xyz;
 	v.light_direction_cameraspace = (u.view * (light_position_worldspace - position_modelspace)).xyz;
 

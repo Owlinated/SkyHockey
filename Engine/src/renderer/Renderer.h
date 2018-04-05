@@ -17,13 +17,17 @@
 class Renderer {
  private:
   std::shared_ptr<Window> window_;
-  Shader depth_shader_, shadow_shader_;
-  Framebuffer depth_framebuffer_;
+  Shader shadow_map_shader_, forward_shader_, deferred_shader_;
+  Framebuffer shadow_map_framebuffer_, deferred_framebuffer_;
 
   glm::vec3 light_position_;
-  glm::mat4 bias_matrix, depth_projection_matrix_, depth_view_matrix_;
+  glm::mat4 window_matrix_, depth_projection_matrix_, depth_view_matrix_;
+
+  void renderShadowMap(Game &game);
+  void renderForward(Game &game);
+  void renderDeferred(Game &game);
  public:
-  Renderer(std::shared_ptr<Window> window);
+  explicit Renderer(std::shared_ptr<Window> window);
   void renderFrame(Game &game);
 };
 

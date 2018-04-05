@@ -4,8 +4,8 @@ uniform struct Uniforms {
     mat4 model;
     mat4 view;
     mat4 model_view_projection;
-    mat4 depth_bias_model_view_projection;
-    vec3 light_inv_direction_worldspace;
+    mat4 depth_window_model_view_projection;
+    vec3 light_position_worldspace;
 } u;
 
 uniform sampler2D u_color_texture;

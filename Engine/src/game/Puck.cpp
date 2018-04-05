@@ -100,5 +100,3 @@ void Puck::update(float delta_time) {
 
   model = glm::translate(glm::mat4(), location);
 }
-
-

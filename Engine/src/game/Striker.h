@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include "GameEntity.h"
 
-class Striker: public GameEntity {
+class Striker : public GameEntity {
  private:
   void updateVelocity(float delta_time);
   bool corner_collision_test();
@@ -14,9 +14,13 @@ class Striker: public GameEntity {
  public:
   glm::vec3 location;
   glm::vec3 velocity;
-  Striker(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture, glm::vec3 location, float target_location_time);
+  Striker(std::shared_ptr<Shape> shape,
+          std::shared_ptr<Texture> texture,
+          glm::vec3 location,
+          float target_location_time);
   glm::vec3 target_location;
   void update(float delta_time) override;
+  glm::vec3 getVelocity() override { return velocity; };
 };
 
 #endif //ENGINE_STRIKER_H
