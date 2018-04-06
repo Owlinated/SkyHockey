@@ -30,7 +30,7 @@ void main() {
 	v.texture_coords = in_texture_coords;
 	v.shadow_coords = u.depth_window_model_view_projection * position_modelspace;
 	v.camera_direction_cameraspace = vec3(0, 0, 0) - (u.view * position_worldspace).xyz;
-	v.light_direction_cameraspace = (u.view * (light_position_worldspace - position_modelspace)).xyz;
+	v.light_direction_cameraspace = (u.view * (light_position_worldspace - position_worldspace)).xyz;
 
 	// FIXME does not handle model scaling (use inverse tranpose instead)
 	v.normal_cameraspace = (u.view * u.model * normal_modelspace).xyz;
