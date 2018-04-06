@@ -74,7 +74,13 @@ void Renderer::renderForward(Game &game) {
     forward_shader_.bind(game.camera.view, "u.view");
     forward_shader_.bind(model_view_projection, "u.model_view_projection");
     forward_shader_.bind(depth_model_view_projection_window, "u.depth_model_view_projection_window");
-    forward_shader_.bind(light_.position_worldspace, "u.light_position_worldspace");
+
+    forward_shader_.bind(light_.position_worldspace, "u.light.position_worldspace");
+    forward_shader_.bind(light_.color, "u.light.color");
+    forward_shader_.bind(entity->material.ambient_multiplier,  "u.material.ambient_multiplier");
+    forward_shader_.bind(entity->material.diffuse_multiplier, "u.material.diffuse_multiplier");
+    forward_shader_.bind(entity->material.specular_multiplier, "u.material.specular_multiplier");
+
     forward_shader_.bind(entity->texture, "u_color_texture", 0);
     forward_shader_.bind(shadow_map_framebuffer_.textures[0], "u_shadow_map", 1);
 
@@ -121,13 +127,15 @@ void Renderer::renderDeferred(Game &game) {
   deferred_render_shader_.bind(deferred_framebuffer_.textures[2], "u_deferred_2", 2);
   deferred_render_shader_.bind(deferred_framebuffer_.textures[3], "u_deferred_3", 3);
   deferred_render_shader_.bind(shadow_map_framebuffer_.textures[0], "u_shadow_map", 4);
+
   for (auto &entity: game.entities) {
     auto texture_name = "u_color_texture[" + std::to_string(entity->id) + "]";
     deferred_render_shader_.bind(entity->texture, texture_name.c_str(), 5 + entity->id);
+
     auto material_name = "u.materials[" + std::to_string(entity->id) + "].";
     deferred_render_shader_.bind(entity->material.ambient_multiplier, (material_name + "ambient_multiplier").c_str());
     deferred_render_shader_.bind(entity->material.diffuse_multiplier, (material_name + "diffuse_multiplier").c_str());
-    deferred_render_shader_.bind(entity->material.specular_color, (material_name + "specular_color").c_str());
+    deferred_render_shader_.bind(entity->material.specular_multiplier, (material_name + "specular_multiplier").c_str());
   }
 
   quad_->bindVertexOnly();

@@ -8,7 +8,7 @@ struct Light {
 struct Material {
     vec3 ambient_multiplier;
     vec3 diffuse_multiplier;
-    vec3 specular_color;
+    vec3 specular_multiplier;
 };
 
 uniform struct Uniforms {
@@ -28,10 +28,8 @@ uniform sampler2D u_color_texture[8];
 
 layout(location = 0) out vec3 out_color;
 
-// Compute visibility at a position in worldspace with variance shadow mapping
-float shadow_visibility(vec4 position_worldspace) {
-    // Project worldspace position to shadow map coords
-    vec4 shadow_coords = u.depth_view_projection_window * position_worldspace;
+// Compute visibility with variance shadow mapping
+float shadow_visibility(vec4 shadow_coords) {
     vec3 shadow_coord_normalized = shadow_coords.xyz / shadow_coords.w;
     vec4 moments = texture(u_shadow_map, shadow_coord_normalized.xy);
 
@@ -48,6 +46,13 @@ float shadow_visibility(vec4 position_worldspace) {
     return max(lit_factor, p_max);
 }
 
+// Project worldspace location to shadowspace and compute visiblity
+float shadow_visibility_world(vec4 position_worldspace){
+    vec4 shadow_coords = u.depth_view_projection_window * position_worldspace;
+    return shadow_visibility(shadow_coords);
+}
+
+// Compute color at the current location
 vec3 material_light_color(Material material, vec4 material_color, Light light, vec4 position_worldspace, vec4 normal_worldspace) {
     // todo some of these multiplications might be replaced (e.g. compute cameraspace coordinates once, do calcs there)
     vec4 light_direction_worldspace = vec4(light.position_worldspace, 1) - position_worldspace;
@@ -62,10 +67,10 @@ vec3 material_light_color(Material material, vec4 material_color, Light light, v
     vec3 reflection_direction = reflect(-light_normalized_cameraspace, normal_normalized_cameraspace);
     float cos_eye_reflection = clamp(dot(eye_normalized_cameraspace, reflection_direction), 0, 1);
 
-    float visibility = shadow_visibility(position_worldspace);
-	return material.ambient_multiplier * material_color.rgb
-	    + visibility * material.diffuse_multiplier * material_color.rgb * light.color * cos_normal_light
-	    + visibility * material.specular_color * light.color * pow(cos_eye_reflection,5);
+    float visibility = shadow_visibility_world(position_worldspace);
+	return material_color.rgb * light.color * (material.ambient_multiplier
+        + visibility * material.diffuse_multiplier * cos_normal_light
+        + visibility * material.specular_multiplier * pow(cos_eye_reflection, 5));
 }
 
 void main() {
