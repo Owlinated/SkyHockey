@@ -1,10 +1,8 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <src/Config.h>
 #include "Window.h"
-
-// Whether to start fullscreen
-// #define FULLSCREEN
 
 Window::Window() {
   if(!glfwInit())
@@ -17,13 +15,13 @@ Window::Window() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#ifdef FULLSCREEN
-  auto monitor = glfwGetPrimaryMonitor();
-  auto video_mode = glfwGetVideoMode(monitor);
-  handle = glfwCreateWindow(video_mode->width, video_mode->height, "AirHockey", monitor, nullptr);
-#else
-  handle = glfwCreateWindow(1280, 720, "AirHockey", nullptr, nullptr);
-#endif
+  if (Config::full_screen) {
+    auto monitor = glfwGetPrimaryMonitor();
+    auto video_mode = glfwGetVideoMode(monitor);
+    handle = glfwCreateWindow(video_mode->width, video_mode->height, "AirHockey", monitor, nullptr);
+  } else {
+    handle = glfwCreateWindow(1280, 720, "AirHockey", nullptr, nullptr);
+  }
 
   if(handle == nullptr){
     throw std::runtime_error("Failed to open GLFW window.");

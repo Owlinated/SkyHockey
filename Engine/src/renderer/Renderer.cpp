@@ -1,4 +1,5 @@
 #include <iostream>
+#include <src/Config.h>
 #include "Renderer.h"
 #include "glm/ext.hpp"
 
@@ -29,8 +30,11 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
 
 void Renderer::renderFrame(Game &game) {
   renderShadowMap(game);
-  renderDeferred(game);
-  //renderForward(game);
+  if (Config::forward_rendering){
+    renderForward(game);
+  } else {
+    renderDeferred(game);
+  }
   glfwSwapBuffers(window_->handle);
 }
 
