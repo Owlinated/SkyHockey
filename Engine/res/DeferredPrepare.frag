@@ -21,6 +21,6 @@ layout(location = 3) out vec4 out_3;
 void main() {
     out_0 = vec4(v.position_worldspace, 0);
     out_1 = vec4(v.normal_worldspace, 0);
-    out_2 = vec4(v.texture_coords, u.object_id, 0);
+    out_2 = vec4(v.texture_coords, u.object_id + 1, 0);
     out_3 = vec4(u.velocity_cameraspace, 0, 0);
 }

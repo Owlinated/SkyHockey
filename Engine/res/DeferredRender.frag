@@ -84,8 +84,13 @@ void main() {
     vec4 position_worldspace = vec4(in_0.xyz, 1);
     vec4 normal_worldspace = vec4(in_1.xyz, 0);
     vec2 texture_coords = in_2.xy;
-    int object_id = int(in_2.z);
+    int object_id = int(in_2.z) - 1;
     vec2 velocity_cameraspace = in_3.xy;
+
+    if (object_id == -1) {
+        out_color = vec3(0, 0, 0);
+        return;
+    }
 
     vec4 texture_color = texture(u_color_texture[object_id], texture_coords);
     Material material = u.materials[object_id];
