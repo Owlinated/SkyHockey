@@ -32,7 +32,8 @@ void checkProgramError(GLuint handle, std::string vertex_path, std::string fragm
     auto error_message = std::make_unique<char[]>(info_length + 1);
     glGetProgramInfoLog(handle, info_length, nullptr, error_message.get());
     std::string message(error_message.get());
-    throw std::runtime_error(Formatter() << "Error while linking " << vertex_path << " and " << fragment_path << ": " << message);
+    throw std::runtime_error(
+        Formatter() << "Error while linking " << vertex_path << " and " << fragment_path << ": " << message);
   }
 }
 
@@ -89,7 +90,21 @@ void Shader::bind(std::shared_ptr<Texture> &texture, const char *uniform_name, i
   // Activate texture unit and bind the texture
   glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + unit_index));
   texture->bind();
+  bind(unit_index, uniform_name);
+}
 
-  // Find identifier of glsl variable and bind it to the same texture unit
-  glUniform1i(getUniform(uniform_name), unit_index);
+void Shader::bind(int scalar, const char *uniform_name) {
+  glUniform1i(getUniform(uniform_name), scalar);
+}
+
+void Shader::bind(glm::vec2 vector, const char *uniform_name) {
+  glUniform2f(getUniform(uniform_name), vector.x, vector.y);
+}
+
+void Shader::bind(glm::vec3 vector, const char *uniform_name) {
+  glUniform3f(getUniform(uniform_name), vector.x, vector.y, vector.z);
+}
+
+void Shader::bind(glm::mat4 matrix, const char *uniform_name) {
+  glUniformMatrix4fv(getUniform(uniform_name), 1, GL_FALSE, &matrix[0][0]);
 }

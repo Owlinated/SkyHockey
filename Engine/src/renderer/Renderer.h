@@ -14,14 +14,20 @@
 #include "src/support/Window.h"
 #include "RenderEntity.h"
 
+struct Light {
+  Light() : position_worldspace(0, 2, 0), color(1, 1, 1) {}
+  glm::vec3 position_worldspace;
+  glm::vec3 color;
+};
+
 class Renderer {
  private:
   std::shared_ptr<Window> window_;
   Shader shadow_map_shader_, forward_shader_, deferred_prepare_shader_, deferred_render_shader_;
   Framebuffer shadow_map_framebuffer_, deferred_framebuffer_;
   std::shared_ptr<Shape> quad_;
+  Light light_;
 
-  glm::vec3 light_position_;
   glm::mat4 window_matrix_, depth_projection_matrix_, depth_view_matrix_;
 
   void renderShadowMap(Game &game);

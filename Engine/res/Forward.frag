@@ -4,7 +4,7 @@ uniform struct Uniforms {
     mat4 model;
     mat4 view;
     mat4 model_view_projection;
-    mat4 depth_window_model_view_projection;
+    mat4 depth_model_view_projection_window;
     vec3 light_position_worldspace;
 } u;
 
