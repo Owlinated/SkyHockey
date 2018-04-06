@@ -15,9 +15,9 @@ class Shape {
         std::vector<glm::vec3> &vertices,
         std::vector<glm::vec3> &normals,
         std::vector<glm::vec2> &textures);
-  int index_count() const { return index_count_; }
   void bind();
-  void bindShadow();
+  void bindVertexOnly();
+  void draw();
 };
 
 #endif //ENGINE_SHAPE_H

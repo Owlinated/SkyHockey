@@ -17,8 +17,9 @@
 class Renderer {
  private:
   std::shared_ptr<Window> window_;
-  Shader shadow_map_shader_, forward_shader_, deferred_shader_;
+  Shader shadow_map_shader_, forward_shader_, deferred_prepare_shader_, deferred_render_shader_;
   Framebuffer shadow_map_framebuffer_, deferred_framebuffer_;
+  std::shared_ptr<Shape> quad_;
 
   glm::vec3 light_position_;
   glm::mat4 window_matrix_, depth_projection_matrix_, depth_view_matrix_;

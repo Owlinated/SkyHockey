@@ -6,9 +6,10 @@
 
 class Window {
  public:
-    Window();
-    int width, height;
-    GLFWwindow* handle;
+  Window();
+  int width, height;
+  GLFWwindow *handle;
+  void bindAsFramebuffer();
 };
 
 #endif //ENGINE_WINDOW_H

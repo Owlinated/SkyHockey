@@ -6,11 +6,17 @@ Framebuffer::Framebuffer(GLuint handle, std::shared_ptr<Texture> texture)
   textures.push_back(std::move(texture));
 }
 
-Framebuffer::Framebuffer(int width, int height, int texture_count, bool depth, bool mipmap, std::string fb_name) :
+Framebuffer::Framebuffer(int width,
+                         int height,
+                         int texture_count,
+                         bool depth,
+                         SamplingMode sample,
+                         Precision precision,
+                         const std::string &fb_name) :
     width(width),
     height(height),
     texture_count(texture_count),
-    draw_buffers(texture_count, 0){
+    draw_buffers(texture_count, 0) {
   glGenFramebuffers(1, &handle_);
   glBindFramebuffer(GL_FRAMEBUFFER, handle_);
 
@@ -29,16 +35,18 @@ Framebuffer::Framebuffer(int width, int height, int texture_count, bool depth, b
     GLuint texture_handle;
     glGenTextures(1, &texture_handle);
     glBindTexture(GL_TEXTURE_2D, texture_handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, precision, width, height, 0, GL_RGBA, GL_FLOAT, nullptr);
 
-    if (mipmap) {
+    auto maxFilter = sample == SamplingMode::Linear ? GL_LINEAR : GL_NEAREST;
+    auto minFilter = sample == SamplingMode::Mipmap ? GL_LINEAR_MIPMAP_LINEAR : maxFilter;
+
+    if (sample == SamplingMode::Mipmap) {
       glGenerateMipmap(GL_TEXTURE_2D);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, 16.0f);
-    } else {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     }
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
     glFramebufferTexture(GL_FRAMEBUFFER, attachment, texture_handle, 0);
 
     glObjectLabel(GL_TEXTURE, texture_handle, -1, (fb_name + std::to_string(texture_id)).c_str());

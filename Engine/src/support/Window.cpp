@@ -43,5 +43,9 @@ Window::Window() {
     throw std::runtime_error("Failed to initialize GLEW.");
   }
 }
+void Window::bindAsFramebuffer() {
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glViewport(0, 0, width, height);
+}
 
 

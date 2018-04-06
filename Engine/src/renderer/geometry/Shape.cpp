@@ -48,9 +48,13 @@ void Shape::bind() {
   glEnableVertexAttribArray(2);
 }
 
-void Shape::bindShadow() {
+void Shape::bindVertexOnly() {
   glBindVertexArray(handle_);
   glEnableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(2);
+}
+
+void Shape::draw() {
+  glDrawElements(GL_TRIANGLES, index_count_, GL_UNSIGNED_SHORT, nullptr);
 }
