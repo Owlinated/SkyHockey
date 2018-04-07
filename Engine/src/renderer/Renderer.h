@@ -23,7 +23,7 @@ struct Light {
 class Renderer {
  private:
   std::shared_ptr<Window> window_;
-  Shader shadow_map_shader_, forward_shader_, deferred_prepare_shader_, deferred_render_shader_;
+  Shader shadow_map_shader_, forward_shader_, deferred_prepare_shader_, deferred_render_shader_, space_shader_;
   Framebuffer shadow_map_framebuffer_, deferred_framebuffer_;
   std::shared_ptr<Shape> quad_;
   Light light_;
@@ -33,6 +33,7 @@ class Renderer {
   void renderShadowMap(Game &game);
   void renderForward(Game &game);
   void renderDeferred(Game &game);
+  void renderBackground(Game &game, IFramebuffer &framebuffer);
  public:
   explicit Renderer(std::shared_ptr<Window> window);
   void renderFrame(Game &game);

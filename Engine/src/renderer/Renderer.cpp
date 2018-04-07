@@ -9,7 +9,8 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     forward_shader_("Forward.vert", "Forward.frag"),
     deferred_prepare_shader_("DeferredPrepare.vert", "DeferredPrepare.frag"),
     deferred_render_shader_("Quad.vert", "DeferredRender.frag"),
-    // Sets x, y, and z to a/2 + 1/2. Moving it from [-1,1] to [0,1].
+    space_shader_("Quad.vert", "Space.frag"),
+    // Sets x, y, and z to a/2 + 1/2. Moving them from [-1,1] to [0,1].
     window_matrix_(
         0.5, 0.0, 0.0, 0.0,
         0.0, 0.5, 0.0, 0.0,
@@ -45,10 +46,7 @@ void Renderer::renderShadowMap(Game &game) {
 
   for (auto &entity: game.entities) {
     auto depth_model_view_projection = depth_projection_matrix_ * depth_view_matrix_ * entity->model;
-    glUniformMatrix4fv(shadow_map_shader_.getUniform("u.model_view_projection"),
-                       1,
-                       GL_FALSE,
-                       &depth_model_view_projection[0][0]);
+    shadow_map_shader_.bind(depth_model_view_projection, "u.model_view_projection");
 
     entity->shape->bindVertexOnly();
     entity->shape->draw();
@@ -61,8 +59,9 @@ void Renderer::renderShadowMap(Game &game) {
 }
 
 void Renderer::renderForward(Game &game) {
-  window_->bindAsFramebuffer();
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  renderBackground(game, *window_);
+  window_->bind();
+  glClear(GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
   forward_shader_.use();
 
@@ -97,25 +96,24 @@ void Renderer::renderDeferred(Game &game) {
 
   for (auto &entity: game.entities) {
     auto model_view_projection = game.camera.projection * game.camera.view * entity->model;
-    auto velocity_cameraspace = model_view_projection * glm::vec4(entity->getVelocity(), 0);
+    auto velocity_cameraspace = glm::vec2(model_view_projection * glm::vec4(entity->getVelocity(), 0));
 
     deferred_prepare_shader_.bind(entity->model, "u.model");
     deferred_prepare_shader_.bind(model_view_projection, "u.model_view_projection");
-    deferred_prepare_shader_.bind(glm::vec2(velocity_cameraspace), "u.velocity_cameraspace");
+    deferred_prepare_shader_.bind(velocity_cameraspace, "u.velocity_cameraspace");
     deferred_prepare_shader_.bind(entity->id, "u.object_id");
 
     entity->shape->bind();
     entity->shape->draw();
   }
 
-  window_->bindAsFramebuffer();
-  glClear(GL_COLOR_BUFFER_BIT);
-  glDisable(GL_DEPTH_TEST);
-  deferred_render_shader_.use();
+  // TODO merge space shader into deferred render
+  renderBackground(game, *window_);
 
   auto view_projection = game.camera.projection * game.camera.view;
   auto depth_view_projection_window = window_matrix_ * depth_projection_matrix_ * depth_view_matrix_;
 
+  deferred_render_shader_.use();
   deferred_render_shader_.bind(game.camera.view, "u.view");
   deferred_render_shader_.bind(view_projection, "u.view_projection");
   deferred_render_shader_.bind(depth_view_projection_window, "u.depth_view_projection_window");
@@ -138,6 +136,36 @@ void Renderer::renderDeferred(Game &game) {
     deferred_render_shader_.bind(entity->material.specular_multiplier, (material_name + "specular_multiplier").c_str());
   }
 
+  window_->bind();
+  glDisable(GL_DEPTH_TEST);
+  quad_->bindVertexOnly();
+  quad_->draw();
+}
+
+void Renderer::renderBackground(Game &game, IFramebuffer &framebuffer) {
+  if(!Config::fancy_background) {
+    framebuffer.bind();
+    glClear(GL_COLOR_BUFFER_BIT);
+    return;
+  }
+
+  auto currentFrame = static_cast<float>(glfwGetTime());
+  auto resolution = glm::vec3(framebuffer.getWidth(), framebuffer.getHeight(), 0);
+  //auto frequencies = glm::vec4(1.0, 0.2, 0.2, 0.2);
+  auto a = glm::fastLog(1.0f + glm::fastLength(game.striker_player->velocity)) * 0.1f;
+  auto b = glm::fastLog(1.0f + glm::fastLength(game.puck->velocity)) * 0.3f;
+  auto c = glm::fastLog(1.0f + glm::fastLength(game.striker_opponent->velocity)) * 0.1f;
+
+  space_shader_.use();
+  space_shader_.bind(currentFrame, "u.time");
+  space_shader_.bind(resolution, "u.resolution");
+  space_shader_.bind(1.0f, "u.frequencies[0]");
+  space_shader_.bind(a, "u.frequencies[1]");
+  space_shader_.bind(b, "u.frequencies[2]");
+  space_shader_.bind(c, "u.frequencies[3]");
+
+  framebuffer.bind();
+  glDisable(GL_DEPTH_TEST);
   quad_->bindVertexOnly();
   quad_->draw();
 }

@@ -97,14 +97,22 @@ void Shader::bind(int scalar, const char *uniform_name) {
   glUniform1i(getUniform(uniform_name), scalar);
 }
 
-void Shader::bind(glm::vec2 vector, const char *uniform_name) {
+void Shader::bind(float scalar, const char *uniform_name) {
+  glUniform1f(getUniform(uniform_name), scalar);
+}
+
+void Shader::bind(glm::vec2 &vector, const char *uniform_name) {
   glUniform2f(getUniform(uniform_name), vector.x, vector.y);
 }
 
-void Shader::bind(glm::vec3 vector, const char *uniform_name) {
+void Shader::bind(glm::vec3 &vector, const char *uniform_name) {
   glUniform3f(getUniform(uniform_name), vector.x, vector.y, vector.z);
 }
 
-void Shader::bind(glm::mat4 matrix, const char *uniform_name) {
+void Shader::bind(glm::vec4 &vector, const char *uniform_name) {
+  glUniform4f(getUniform(uniform_name), vector.x, vector.y, vector.z, vector.w);
+}
+
+void Shader::bind(glm::mat4 &matrix, const char *uniform_name) {
   glUniformMatrix4fv(getUniform(uniform_name), 1, GL_FALSE, &matrix[0][0]);
 }

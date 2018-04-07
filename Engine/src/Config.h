@@ -7,6 +7,7 @@ class Config {
  public:
   static bool full_screen;
   static bool forward_rendering;
+  static bool fancy_background;
   static void parse(std::vector<std::string> arguments);
 };
 

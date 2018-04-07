@@ -28,6 +28,11 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     Config::forward_rendering ^= 1;
   }
 
+  // Map S(pace) to toggling the fancy background on and off
+  if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+    Config::fancy_background ^= 1;
+  }
+
   // Close the window when escape is pressed
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);

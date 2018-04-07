@@ -88,8 +88,7 @@ void main() {
     vec2 velocity_cameraspace = in_3.xy;
 
     if (object_id == -1) {
-        out_color = vec3(0, 0, 0);
-        return;
+        discard;
     }
 
     vec4 texture_color = texture(u_color_texture[object_id], texture_coords);

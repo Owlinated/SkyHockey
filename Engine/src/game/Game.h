@@ -11,11 +11,11 @@ class Game {
  private:
   std::shared_ptr<Window> window_;
   ObjLoader obj_loader_;
+ public:
+  explicit Game(std::shared_ptr<Window> window);
   std::unique_ptr<GameEntity> table;
   std::unique_ptr<Puck> puck;
   std::unique_ptr<Striker> striker_player, striker_opponent;
- public:
-  explicit Game(std::shared_ptr<Window> window);
   std::vector<GameEntity*> entities;
   Camera camera;
   void update(float deltaTime);
