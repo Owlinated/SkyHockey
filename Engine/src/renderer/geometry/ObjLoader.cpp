@@ -1,3 +1,4 @@
+#include <memory>
 #include <vector>
 #include <cstdio>
 #include <string>
@@ -65,14 +66,19 @@ std::shared_ptr<Shape> ObjLoader::loadShape(const tinyobj::shape_t shape) {
     index_offset += face_vertices;
   }
   // return std::make_shared<Shape>(indices, vertices, normals, textures);
-  return std::shared_ptr<Shape>(new Shape(indices, vertices, normals, textures));
+  return std::make_shared<Shape>(indices, vertices, normals, textures);
 }
 
-std::shared_ptr<Shape> ObjLoader::createQuad() {
+std::shared_ptr<Shape> createQuad() {
   std::vector<unsigned short> indices = {0, 1, 2, 2, 1, 3};
   std::vector<glm::vec3> vertices = {glm::vec3(-1, -1, 0), glm::vec3(1, -1, 0), glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0)};
   std::vector<glm::vec2> textures = {glm::vec2(-1, -1), glm::vec2(1, -1), glm::vec2(-1, 1), glm::vec2(1, 1)};
   std::vector<glm::vec3> normals = {glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
 
   return std::make_shared<Shape>(indices, vertices, normals, textures);
+}
+
+std::shared_ptr<Shape> ObjLoader::getQuad() {
+  static std::shared_ptr<Shape> quad = createQuad();
+  return quad;
 }

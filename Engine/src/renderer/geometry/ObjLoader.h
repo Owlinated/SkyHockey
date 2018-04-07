@@ -12,10 +12,11 @@ class ObjLoader {
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
   std::shared_ptr<Shape> loadShape(tinyobj::shape_t shape);
+  static std::shared_ptr<Shape> quad;
  public:
   explicit ObjLoader(const char *path);
   std::shared_ptr<Shape> loadShape(const std::string &name);
-  static std::shared_ptr<Shape> createQuad();
+  static std::shared_ptr<Shape> getQuad();
 };
 
 #endif //ENGINE_OBJLOADER_H
