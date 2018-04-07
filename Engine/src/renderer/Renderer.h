@@ -31,7 +31,8 @@ class Renderer {
 
   void renderForward(Game &game);
   void renderDeferred(Game &game);
-  static void renderShadowMap(Game &game, IFramebuffer &output, glm::mat4 depth_view_projection);
+  static void renderShadowMap(Game &game, Framebuffer &output, glm::mat4 depth_view_projection,
+                              Framebuffer &horizontal_blur_framebuffer, Framebuffer &vertical_blur_framebuffer);
   static void renderBackground(Game &game, IFramebuffer &output);
   static void renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr<Texture> &velocity, IFramebuffer &output);
   static void renderBidirectionalBlur(std::shared_ptr<Texture> &color,

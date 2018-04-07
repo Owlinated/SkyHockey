@@ -18,8 +18,8 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     shadow_map_framebuffer_(2048, 1024, 1, true, SamplingMode::Linear, Precision::Pos16, "shadowmap"),
     deferred_framebuffer_(window->width, window->height, 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
     motion_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
-    horizontal_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "horizontal_blur"),
-    vertical_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "vertical_blur") {
+    horizontal_blur_framebuffer_(2048, 1024, 1, false, SamplingMode::Linear, Precision::Pos16, "horizontal_blur"),
+    vertical_blur_framebuffer_(2048, 1024, 1, true, SamplingMode::Linear, Precision::Pos16, "vertical_blur") {
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -39,7 +39,8 @@ void Renderer::renderForward(Game &game) {
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
   auto depth_view_projection_window = window_matrix_ * depth_view_projection;
 
-  renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection);
+  renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection,
+                  horizontal_blur_framebuffer_, vertical_blur_framebuffer_);
 
   renderBackground(game, *window_);
 
@@ -66,7 +67,7 @@ void Renderer::renderForward(Game &game) {
     forward_shader.bind(entity->material.specular_multiplier, "u.material.specular_multiplier");
 
     forward_shader.bind(entity->texture, "u_color_texture", 0);
-    forward_shader.bind(shadow_map_framebuffer_.textures[0], "u_shadow_map", 1);
+    forward_shader.bind(vertical_blur_framebuffer_.textures[0], "u_shadow_map", 1);
 
     entity->shape->bind();
     entity->shape->draw();
@@ -78,7 +79,8 @@ void Renderer::renderDeferred(Game &game) {
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
   auto depth_view_projection_window = window_matrix_ * depth_view_projection;
 
-  renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection);
+  renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection,
+                  horizontal_blur_framebuffer_, vertical_blur_framebuffer_);
 
   deferred_framebuffer_.bind();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -114,7 +116,7 @@ void Renderer::renderDeferred(Game &game) {
   deferred_render_shader.bind(deferred_framebuffer_.textures[0], "u_deferred_0", 0);
   deferred_render_shader.bind(deferred_framebuffer_.textures[1], "u_deferred_1", 1);
   deferred_render_shader.bind(deferred_framebuffer_.textures[2], "u_deferred_2", 2);
-  deferred_render_shader.bind(shadow_map_framebuffer_.textures[0], "u_shadow_map", 4);
+  deferred_render_shader.bind(vertical_blur_framebuffer_.textures[0], "u_shadow_map", 4);
 
   for (auto &entity: game.entities) {
     auto texture_name = "u_color_texture[" + std::to_string(entity->id) + "]";
@@ -132,15 +134,17 @@ void Renderer::renderDeferred(Game &game) {
   quad->bindVertexOnly();
   quad->draw();
 
-  //renderMotionBlur(motion_blur_framebuffer_.textures[0], deferred_framebuffer_.textures[3], *window_);
-
-  // TODO Debug only
-  renderMotionBlur(motion_blur_framebuffer_.textures[0], deferred_framebuffer_.textures[3], horizontal_blur_framebuffer_);
-  renderBidirectionalBlur(horizontal_blur_framebuffer_.textures[0], vertical_blur_framebuffer_,
-                          vertical_blur_framebuffer_.textures[0], *window_);
+  renderMotionBlur(motion_blur_framebuffer_.textures[0], deferred_framebuffer_.textures[3], *window_);
 }
 
-void Renderer::renderShadowMap(Game &game, IFramebuffer &output, glm::mat4 depth_view_projection) {
+/// Render and blur shadow map. The resulting blurred and mipmapped texture is in vertical_blur_framebuffer
+/// \param game Game which objects to render
+/// \param output Texture to write shadows to
+/// \param depth_view_projection Matrix for transforming world coordinates into shadow cameraspace
+/// \param horizontal_blur_framebuffer Buffer to store horizontally blurred image in
+/// \param vertical_blur_framebuffer Buffer to store vertically blurred image in
+void Renderer::renderShadowMap(Game &game, Framebuffer &output, glm::mat4 depth_view_projection,
+                               Framebuffer &horizontal_blur_framebuffer, Framebuffer &vertical_blur_framebuffer) {
   static Shader shadow_map_shader("ShadowMap.vert", "ShadowMap.frag");
   shadow_map_shader.use();
 
@@ -157,9 +161,13 @@ void Renderer::renderShadowMap(Game &game, IFramebuffer &output, glm::mat4 depth
   }
 
   glDisable(GL_DEPTH_TEST);
+  renderBidirectionalBlur(output.textures[0], horizontal_blur_framebuffer,
+                          horizontal_blur_framebuffer.textures[0], vertical_blur_framebuffer);
 
-  // TODO generate mipmaps after blurring
-  // glGenerateMipmap(GL_TEXTURE_2D);
+  //auto mipmap_texture_id = vertical_blur_framebuffer.textures[0]->handle;
+  //glGenerateTextureMipmap(mipmap_texture_id);
+  vertical_blur_framebuffer.textures[0]->bind();
+  glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void Renderer::renderBackground(Game &game, IFramebuffer &output) {
@@ -215,21 +223,26 @@ void Renderer::renderBidirectionalBlur(std::shared_ptr<Texture> &color,
   quad->bindVertexOnly();
   glDisable(GL_DEPTH_TEST);
 
-  static Shader horizontal_blur_shader("Quad.vert", "BlurHorizontal.frag");
-  horizontal_blur_shader.use();
-  horizontal_blur_shader.bind(8, "u.sample_count");
-  horizontal_blur_shader.bind(1.0f, "u.step_size");
-  horizontal_blur_shader.bind(color, "u_color_texture", 0);
+  static Shader blur_shader("Quad.vert", "BlurUnidirectional.frag");
+  blur_shader.use();
+  blur_shader.bind(Config::shadow_blur_size, "u.sample_count");
+  blur_shader.bind(0.5f, "u.falloff");
 
-  intermediate.bind();
-  quad->draw();
+  {
+    blur_shader.bind(1, "u.horizontal_step");
+    blur_shader.bind(0, "u.vertical_step");
+    blur_shader.bind(color, "u_color_texture", 0);
 
-  static Shader vertical_blur_shader("Quad.vert", "BlurVertical.frag");
-  horizontal_blur_shader.use();
-  horizontal_blur_shader.bind(8, "u.sample_count");
-  horizontal_blur_shader.bind(1.0f, "u.step_size");
-  horizontal_blur_shader.bind(intermediate_color, "u_color_texture", 0);
+    intermediate.bind();
+    quad->draw();
+  }
 
-  output.bind();
-  quad->draw();
+  {
+    blur_shader.bind(0, "u.horizontal_step");
+    blur_shader.bind(1, "u.vertical_step");
+    blur_shader.bind(intermediate_color, "u_color_texture", 0);
+
+    output.bind();
+    quad->draw();
+  }
 }
