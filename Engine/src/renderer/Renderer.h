@@ -23,7 +23,8 @@ struct Light {
 class Renderer {
  private:
   std::shared_ptr<Window> window_;
-  Framebuffer shadow_map_framebuffer_, deferred_framebuffer_, motion_blur_framebuffer_;
+  Framebuffer shadow_map_framebuffer_, deferred_framebuffer_,
+      motion_blur_framebuffer_, horizontal_blur_framebuffer_, vertical_blur_framebuffer_;
   Light light_;
 
   glm::mat4 window_matrix_, depth_projection_matrix_, depth_view_matrix_;
@@ -33,6 +34,10 @@ class Renderer {
   static void renderShadowMap(Game &game, IFramebuffer &output, glm::mat4 depth_view_projection);
   static void renderBackground(Game &game, IFramebuffer &output);
   static void renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr<Texture> &velocity, IFramebuffer &output);
+  static void renderBidirectionalBlur(std::shared_ptr<Texture> &color,
+                                      IFramebuffer &intermediate,
+                                      std::shared_ptr<Texture> &intermediate_color,
+                                      IFramebuffer &output);
  public:
   explicit Renderer(std::shared_ptr<Window> window);
   void renderFrame(Game &game);

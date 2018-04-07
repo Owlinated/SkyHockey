@@ -17,7 +17,9 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     depth_view_matrix_(glm::lookAt(light_.position_worldspace, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0))),
     shadow_map_framebuffer_(2048, 1024, 1, true, SamplingMode::Linear, Precision::Pos16, "shadowmap"),
     deferred_framebuffer_(window->width, window->height, 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
-    motion_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur") {
+    motion_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
+    horizontal_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "horizontal_blur"),
+    vertical_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "vertical_blur") {
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -112,7 +114,6 @@ void Renderer::renderDeferred(Game &game) {
   deferred_render_shader.bind(deferred_framebuffer_.textures[0], "u_deferred_0", 0);
   deferred_render_shader.bind(deferred_framebuffer_.textures[1], "u_deferred_1", 1);
   deferred_render_shader.bind(deferred_framebuffer_.textures[2], "u_deferred_2", 2);
-  deferred_render_shader.bind(deferred_framebuffer_.textures[3], "u_deferred_3", 3);
   deferred_render_shader.bind(shadow_map_framebuffer_.textures[0], "u_shadow_map", 4);
 
   for (auto &entity: game.entities) {
@@ -131,7 +132,12 @@ void Renderer::renderDeferred(Game &game) {
   quad->bindVertexOnly();
   quad->draw();
 
-  renderMotionBlur(motion_blur_framebuffer_.textures[0], deferred_framebuffer_.textures[3], *window_);
+  //renderMotionBlur(motion_blur_framebuffer_.textures[0], deferred_framebuffer_.textures[3], *window_);
+
+  // TODO Debug only
+  renderMotionBlur(motion_blur_framebuffer_.textures[0], deferred_framebuffer_.textures[3], horizontal_blur_framebuffer_);
+  renderBidirectionalBlur(horizontal_blur_framebuffer_.textures[0], vertical_blur_framebuffer_,
+                          vertical_blur_framebuffer_.textures[0], *window_);
 }
 
 void Renderer::renderShadowMap(Game &game, IFramebuffer &output, glm::mat4 depth_view_projection) {
@@ -186,7 +192,7 @@ void Renderer::renderBackground(Game &game, IFramebuffer &output) {
 }
 
 void Renderer::renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr<Texture> &velocity, IFramebuffer &output) {
-  static Shader motion_blur_shader("Quad.vert", "MotionBlur.frag");
+  static Shader motion_blur_shader("Quad.vert", "BlurMotion.frag");
   motion_blur_shader.use();
   motion_blur_shader.bind(8, "u.sample_count");
   motion_blur_shader.bind(0.2f, "u.step_size");
@@ -198,5 +204,32 @@ void Renderer::renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr
 
   static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
   quad->bindVertexOnly();
+  quad->draw();
+}
+
+void Renderer::renderBidirectionalBlur(std::shared_ptr<Texture> &color,
+                                       IFramebuffer &intermediate,
+                                       std::shared_ptr<Texture> &intermediate_color,
+                                       IFramebuffer &output) {
+  static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
+  quad->bindVertexOnly();
+  glDisable(GL_DEPTH_TEST);
+
+  static Shader horizontal_blur_shader("Quad.vert", "BlurHorizontal.frag");
+  horizontal_blur_shader.use();
+  horizontal_blur_shader.bind(8, "u.sample_count");
+  horizontal_blur_shader.bind(1.0f, "u.step_size");
+  horizontal_blur_shader.bind(color, "u_color_texture", 0);
+
+  intermediate.bind();
+  quad->draw();
+
+  static Shader vertical_blur_shader("Quad.vert", "BlurVertical.frag");
+  horizontal_blur_shader.use();
+  horizontal_blur_shader.bind(8, "u.sample_count");
+  horizontal_blur_shader.bind(1.0f, "u.step_size");
+  horizontal_blur_shader.bind(intermediate_color, "u_color_texture", 0);
+
+  output.bind();
   quad->draw();
 }
