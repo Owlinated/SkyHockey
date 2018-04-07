@@ -33,6 +33,14 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     Config::fancy_background ^= 1;
   }
 
+  // Map E and D to increasing and decreasing the shadow map blur
+  if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+    Config::shadow_blur_size++;
+  }
+  if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+    Config::shadow_blur_size--;
+  }
+
   // Close the window when escape is pressed
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);

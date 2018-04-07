@@ -22,7 +22,6 @@ uniform struct Uniforms {
 uniform sampler2D u_deferred_0;
 uniform sampler2D u_deferred_1;
 uniform sampler2D u_deferred_2;
-uniform sampler2D u_deferred_3;
 uniform sampler2D u_shadow_map;
 uniform sampler2D u_color_texture[8];
 
@@ -78,14 +77,12 @@ void main() {
     vec4 in_0 = texelFetch(u_deferred_0, ivec2(gl_FragCoord.xy), 0);
     vec4 in_1 = texelFetch(u_deferred_1, ivec2(gl_FragCoord.xy), 0);
     vec4 in_2 = texelFetch(u_deferred_2, ivec2(gl_FragCoord.xy), 0);
-    vec4 in_3 = texelFetch(u_deferred_3, ivec2(gl_FragCoord.xy), 0);
 
     // Read properties written by DeferredPrepare.frag
     vec4 position_worldspace = vec4(in_0.xyz, 1);
     vec4 normal_worldspace = vec4(in_1.xyz, 0);
     vec2 texture_coords = in_2.xy;
     int object_id = int(in_2.z) - 1;
-    vec2 velocity_cameraspace = in_3.xy;
 
     if (object_id == -1) {
         discard;
