@@ -12,7 +12,7 @@ find_package(OpenGL REQUIRED)
 add_subdirectory(lib)
 
 include_directories(
-        lib/tiny-1.1.1/
+        lib/tinyobjloader/
         lib/lodepng/
         .
 )

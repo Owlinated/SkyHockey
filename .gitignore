@@ -13,6 +13,7 @@ Models/*.mtl
 Engine/.idea/**/workspace.xml
 Engine/.idea/**/tasks.xml
 Engine/.idea/dictionaries
+Engine/.idea/vcs.xml
 Engine/cmake-build-debug/
 
 # Visual Studio
