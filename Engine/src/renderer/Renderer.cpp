@@ -164,8 +164,6 @@ void Renderer::renderShadowMap(Game &game, Framebuffer &output, glm::mat4 depth_
   renderBidirectionalBlur(output.textures[0], horizontal_blur_framebuffer,
                           horizontal_blur_framebuffer.textures[0], vertical_blur_framebuffer);
 
-  //auto mipmap_texture_id = vertical_blur_framebuffer.textures[0]->handle;
-  //glGenerateTextureMipmap(mipmap_texture_id);
   vertical_blur_framebuffer.textures[0]->bind();
   glGenerateMipmap(GL_TEXTURE_2D);
 }
@@ -219,14 +217,40 @@ void Renderer::renderBidirectionalBlur(std::shared_ptr<Texture> &color,
                                        IFramebuffer &intermediate,
                                        std::shared_ptr<Texture> &intermediate_color,
                                        IFramebuffer &output) {
+  // Cache gaussian/normal distribution for blurring
+  const float sigma = 3.0f, two_sigma_squared = 2 * sigma * sigma;
+  static auto cached_size = 0;
+  static std::vector<float> weights;
+  if(cached_size != Config::shadow_blur_size) {
+    cached_size = Config::shadow_blur_size;
+
+    // Simplification: no offset
+    auto weight_sum = 0.0f;
+    weights.clear();
+    for (auto i = 0; i < cached_size; ++i) {
+      auto weight = std::exp((i * i) / two_sigma_squared);
+      weights.push_back(weight);
+      // Since values are summed along two directions, all values but the first are used twice
+      weight_sum += (i == 0 ? 1 : 2) * weight;
+    }
+
+    // Normalize with discrete sum
+    for (auto i = 0; i < cached_size; ++i) {
+      weights[i] /= weight_sum;
+    }
+  }
+
   static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
   quad->bindVertexOnly();
   glDisable(GL_DEPTH_TEST);
 
   static Shader blur_shader("Quad.vert", "BlurUnidirectional.frag");
   blur_shader.use();
-  blur_shader.bind(Config::shadow_blur_size, "u.sample_count");
-  blur_shader.bind(0.5f, "u.falloff");
+  blur_shader.bind(cached_size, "u.sample_count");
+  for (auto i = 0; i < cached_size; ++i) {
+    auto weight_name = "u.normalized_weights[" + std::to_string(i) + "]";
+    blur_shader.bind(weights[i], weight_name.c_str());
+  }
 
   {
     blur_shader.bind(1, "u.horizontal_step");

@@ -34,11 +34,13 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
   }
 
   // Map E and D to increasing and decreasing the shadow map blur
-  if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+  if (key == GLFW_KEY_E && action == GLFW_PRESS && Config::shadow_blur_size < 7) {
     Config::shadow_blur_size++;
+    std::cout << "Shadow blur increased to " << Config::shadow_blur_size << std::endl;
   }
-  if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+  if (key == GLFW_KEY_D && action == GLFW_PRESS && Config::shadow_blur_size > 0) {
     Config::shadow_blur_size--;
+    std::cout << "Shadow blur decreased to " << Config::shadow_blur_size << std::endl;
   }
 
   // Close the window when escape is pressed
