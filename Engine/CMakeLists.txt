@@ -1,28 +1,20 @@
 # CMake entry point
-cmake_minimum_required (VERSION 3.9)
-set (PROJECT_NAME "Engine")
-project (${PROJECT_NAME})
+cmake_minimum_required(VERSION 3.9)
+set(PROJECT_NAME "Engine")
+project(${PROJECT_NAME})
+
+include(conanbuildinfo.cmake)
+conan_basic_setup()
 
 find_package(OpenGL REQUIRED)
 
-# Compile external dependencies
-add_subdirectory (lib)
+# Compile non-conan dependencies
+add_subdirectory(lib)
 
 include_directories(
-    lib/glfw-3.2.1/include/
-    lib/glew-2.1.0/include/
-    lib/glm-0.9.8.5/
-    lib/tiny-1.1.1/
-    lib/lodepng/
-    .
-)
-
-add_definitions(
-    -DTW_STATIC
-    -DTW_NO_LIB_PRAGMA
-    -DTW_NO_DIRECT3D
-    -DGLEW_STATIC
-    -D_CRT_SECURE_NO_WARNINGS
+        lib/tinyobjloader/
+        lib/lodepng/
+        .
 )
 
 add_executable(${PROJECT_NAME}
@@ -46,16 +38,15 @@ add_executable(${PROJECT_NAME}
         src/renderer/material/IFramebuffer.h)
 
 target_link_libraries(${PROJECT_NAME}
-    ${OPENGL_LIBRARY}
-    glfw
-    glew
-    tiny
-    lodepng
-)
+        ${CONAN_LIBS}
+        ${OPENGL_LIBRARY}
+        tiny
+        lodepng
+        )
 
 # Copy shaders to build directory
 add_custom_target(copy_resources ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         COMMENT "Copy Resources")
 
 add_dependencies(${PROJECT_NAME} copy_resources)

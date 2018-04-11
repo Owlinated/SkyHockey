@@ -1,0 +1,6 @@
+[submodule "Engine/lib/tinyobjloader"]
+	path = Engine/lib/tinyobjloader
+	url = https://github.com/syoyo/tinyobjloader
+[submodule "Engine/lib/lodepng"]
+	path = Engine/lib/lodepng
+	url = https://github.com/lvandeve/lodepng
