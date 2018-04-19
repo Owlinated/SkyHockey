@@ -14,13 +14,15 @@ Game::Game(std::shared_ptr<Window> window) :
   auto striker_shape = obj_loader_.loadShape("Striker");
   auto puck_shape = obj_loader_.loadShape("Puck");
 
-  table = std::make_unique<GameEntity>(table_shape, table_texture);
+  table = std::make_unique<GameEntity>(table_shape, table_texture, glm::vec3());
+  score_board = std::make_unique<GameEntity>(puck_shape, puck_texture, glm::vec3());
   striker_player = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, 1), 0.05f);
   striker_opponent = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, -1), 0.5f);
-  puck = std::make_unique<Puck>(puck_shape, puck_texture);
+  puck = std::make_unique<Puck>(puck_shape, puck_texture, glm::vec3());
   puck->velocity = glm::vec3(0, 0, -0.3f);
 
   entities.emplace_back(table.get());
+  entities.emplace_back(score_board.get());
   entities.emplace_back(puck.get());
   entities.emplace_back(striker_player.get());
   entities.emplace_back(striker_opponent.get());
@@ -59,6 +61,9 @@ void goal_test(std::unique_ptr<Puck> &puck) {
 }
 
 void Game::update(float deltaTime) {
+  static auto total_time = 0.0f;
+  total_time += deltaTime;
+
   const auto mouse_speed = 0.001f;
   double mouse_x, mouse_y, mid_x = window_->width / 2, mid_y = window_->height / 2;
   glfwGetCursorPos(window_->handle, &mouse_x, &mouse_y);
@@ -89,4 +94,6 @@ void Game::update(float deltaTime) {
   // striker puck collision test
   striker_puck_collision_test(striker_player, puck);
   striker_puck_collision_test(striker_opponent, puck);
+
+  score_board->location = glm::vec3(cos(total_time / 3), 0.1, 1.0);
 }

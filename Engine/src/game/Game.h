@@ -13,7 +13,7 @@ class Game {
   ObjLoader obj_loader_;
  public:
   explicit Game(std::shared_ptr<Window> window);
-  std::unique_ptr<GameEntity> table;
+  std::unique_ptr<GameEntity> table, score_board;
   std::unique_ptr<Puck> puck;
   std::unique_ptr<Striker> striker_player, striker_opponent;
   std::vector<GameEntity*> entities;

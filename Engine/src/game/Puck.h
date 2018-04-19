@@ -11,9 +11,8 @@ class Puck : public GameEntity {
   bool corner_collision_test();
   void updateLocation(float delta_time);
  public:
-  glm::vec3 location;
   glm::vec3 velocity;
-  Puck(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture);
+  Puck(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture, glm::vec3 location);
   void update(float delta_time) override;
   glm::vec3 getVelocity() override { return velocity; };
 };

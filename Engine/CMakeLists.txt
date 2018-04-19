@@ -30,7 +30,7 @@ add_executable(${PROJECT_NAME}
         src/game/Striker.cpp src/game/Striker.h
         src/renderer/Renderer.cpp src/renderer/Renderer.h
         src/game/Game.cpp src/game/Game.h
-        src/game/GameEntity.h
+        src/game/GameEntity.h src/game/GameEntity.cpp
         src/renderer/material/Framebuffer.cpp src/renderer/material/Framebuffer.h
         src/renderer/material/TexturePNG.cpp src/renderer/material/TexturePNG.h
         src/renderer/RenderEntity.cpp src/renderer/RenderEntity.h

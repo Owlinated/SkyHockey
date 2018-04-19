@@ -2,8 +2,8 @@
 #include <utility>
 #include "Puck.h"
 
-Puck::Puck(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture) :
-    GameEntity(std::move(shape), std::move(texture)) {
+Puck::Puck(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture, glm::vec3 location) :
+    GameEntity(std::move(shape), std::move(texture), location) {
 }
 
 void Puck::updateVelocity(float delta_time){
@@ -97,6 +97,5 @@ void Puck::updateLocation(float delta_time) {
 void Puck::update(float delta_time) {
   updateVelocity(delta_time);
   updateLocation(delta_time);
-
-  model = glm::translate(glm::mat4(), location);
+  GameEntity::update(delta_time);
 }

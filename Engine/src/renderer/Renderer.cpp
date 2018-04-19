@@ -12,14 +12,17 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
         0.0, 0.0, 0.5, 0.0,
         0.5, 0.5, 0.5, 1.0
     ),
-    // Setup 2:1 shadow map with depth buffer and 50° fov
-    depth_projection_matrix_(glm::perspective<float>(glm::radians(50.0f), 2.0f / 1.0f, 1.0f, 4.0f)),
+    shadow_width_(2048),
+    shadow_height_(1024),
+    shadow_clip_near_(1.0f),
+    shadow_clip_far_(4.0f),
+    depth_projection_matrix_(glm::perspective<float>(glm::radians(50.0f), shadow_width_ / shadow_height_, shadow_clip_near_, shadow_clip_far_)),
     depth_view_matrix_(glm::lookAt(light_.position_worldspace, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0))),
-    shadow_map_framebuffer_(2048, 1024, 1, true, SamplingMode::Linear, Precision::Pos16, "shadowmap"),
+    shadow_map_framebuffer_(shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "shadowmap"),
     deferred_framebuffer_(window->width, window->height, 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
-    motion_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
-    horizontal_blur_framebuffer_(2048, 1024, 1, false, SamplingMode::Linear, Precision::Pos16, "horizontal_blur"),
-    vertical_blur_framebuffer_(2048, 1024, 1, true, SamplingMode::Linear, Precision::Pos16, "vertical_blur") {
+    motion_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Float32, "motion_blur"),
+    horizontal_blur_framebuffer_(shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "horizontal_blur"),
+    vertical_blur_framebuffer_(shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "vertical_blur") {
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -38,8 +41,9 @@ void Renderer::renderForward(Game &game) {
   auto view_projection = game.camera.projection * game.camera.view;
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
   auto depth_view_projection_window = window_matrix_ * depth_view_projection;
+  auto depth_attenuation = shadow_clip_far_ - shadow_clip_near_;
 
-  renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection,
+  renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection, depth_attenuation,
                   horizontal_blur_framebuffer_, vertical_blur_framebuffer_);
 
   renderBackground(game, *window_);
@@ -78,8 +82,9 @@ void Renderer::renderDeferred(Game &game) {
   auto view_projection = game.camera.projection * game.camera.view;
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
   auto depth_view_projection_window = window_matrix_ * depth_view_projection;
+  auto depth_attenuation = shadow_clip_far_ - shadow_clip_near_;
 
-  renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection,
+  renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection, depth_attenuation,
                   horizontal_blur_framebuffer_, vertical_blur_framebuffer_);
 
   deferred_framebuffer_.bind();
@@ -103,13 +108,14 @@ void Renderer::renderDeferred(Game &game) {
   }
 
   // TODO merge space shader into deferred render
-  renderBackground(game, *window_);
+  renderBackground(game, motion_blur_framebuffer_);
 
   static Shader deferred_render_shader("Quad.vert", "DeferredRender.frag");
   deferred_render_shader.use();
   deferred_render_shader.bind(game.camera.view, "u.view");
   deferred_render_shader.bind(view_projection, "u.view_projection");
   deferred_render_shader.bind(depth_view_projection_window, "u.depth_view_projection_window");
+  deferred_render_shader.bind(depth_attenuation, "u.depth_attenuation");
   deferred_render_shader.bind(light_.position_worldspace, "u.light.position_worldspace");
   deferred_render_shader.bind(light_.color, "u.light.color");
 
@@ -143,8 +149,12 @@ void Renderer::renderDeferred(Game &game) {
 /// \param depth_view_projection Matrix for transforming world coordinates into shadow cameraspace
 /// \param horizontal_blur_framebuffer Buffer to store horizontally blurred image in
 /// \param vertical_blur_framebuffer Buffer to store vertically blurred image in
-void Renderer::renderShadowMap(Game &game, Framebuffer &output, glm::mat4 depth_view_projection,
-                               Framebuffer &horizontal_blur_framebuffer, Framebuffer &vertical_blur_framebuffer) {
+void Renderer::renderShadowMap(Game &game,
+                               Framebuffer &output,
+                               glm::mat4 depth_view_projection,
+                               float depth_attenuation,
+                               Framebuffer &horizontal_blur_framebuffer,
+                               Framebuffer &vertical_blur_framebuffer) {
   static Shader shadow_map_shader("ShadowMap.vert", "ShadowMap.frag");
   shadow_map_shader.use();
 
@@ -155,6 +165,7 @@ void Renderer::renderShadowMap(Game &game, Framebuffer &output, glm::mat4 depth_
   for (auto &entity: game.entities) {
     auto depth_model_view_projection = depth_view_projection * entity->model;
     shadow_map_shader.bind(depth_model_view_projection, "u.model_view_projection");
+    shadow_map_shader.bind(depth_attenuation, "u.depth_attenuation");
 
     entity->shape->bindVertexOnly();
     entity->shape->draw();

@@ -12,7 +12,6 @@ class Striker : public GameEntity {
   void updateLocation(float delta_time);
   float speed_up;
  public:
-  glm::vec3 location;
   glm::vec3 velocity;
   Striker(std::shared_ptr<Shape> shape,
           std::shared_ptr<Texture> texture,

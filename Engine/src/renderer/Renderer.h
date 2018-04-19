@@ -22,6 +22,9 @@ struct Light {
 
 class Renderer {
  private:
+  int shadow_width_, shadow_height_;
+  float shadow_clip_near_, shadow_clip_far_;
+
   std::shared_ptr<Window> window_;
   Framebuffer shadow_map_framebuffer_, deferred_framebuffer_,
       motion_blur_framebuffer_, horizontal_blur_framebuffer_, vertical_blur_framebuffer_;
@@ -31,8 +34,12 @@ class Renderer {
 
   void renderForward(Game &game);
   void renderDeferred(Game &game);
-  static void renderShadowMap(Game &game, Framebuffer &output, glm::mat4 depth_view_projection,
-                              Framebuffer &horizontal_blur_framebuffer, Framebuffer &vertical_blur_framebuffer);
+  static void renderShadowMap(Game &game,
+                              Framebuffer &output,
+                              glm::mat4 depth_view_projection,
+                              float depth_attenuation,
+                              Framebuffer &horizontal_blur_framebuffer,
+                              Framebuffer &vertical_blur_framebuffer);
   static void renderBackground(Game &game, IFramebuffer &output);
   static void renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr<Texture> &velocity, IFramebuffer &output);
   static void renderBidirectionalBlur(std::shared_ptr<Texture> &color,

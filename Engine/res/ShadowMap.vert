@@ -2,6 +2,7 @@
 
 uniform struct Uniforms {
     mat4 model_view_projection;
+    float depth_attenuation;
 } u;
 
 layout(location = 0) in vec3 in_position_modelspace;
