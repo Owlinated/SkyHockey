@@ -16,6 +16,7 @@ uniform struct Uniforms {
     mat4 view;
     mat4 model_view_projection;
     mat4 depth_model_view_projection_window;
+    float depth_attenuation;
     Light light;
     Material material;
 } u;

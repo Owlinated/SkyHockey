@@ -63,6 +63,7 @@ void Renderer::renderForward(Game &game) {
     forward_shader.bind(game.camera.view, "u.view");
     forward_shader.bind(model_view_projection, "u.model_view_projection");
     forward_shader.bind(depth_model_view_projection_window, "u.depth_model_view_projection_window");
+    forward_shader.bind(depth_attenuation, "u.depth_attenuation");
 
     forward_shader.bind(light_.position_worldspace, "u.light.position_worldspace");
     forward_shader.bind(light_.color, "u.light.color");
