@@ -20,12 +20,13 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     depth_view_matrix_(glm::lookAt(light_.position_worldspace, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0))),
     shadow_map_framebuffer_(shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "shadowmap"),
     deferred_framebuffer_(window->width, window->height, 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
-    motion_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Float32, "motion_blur"),
+    motion_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
     horizontal_blur_framebuffer_(shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "horizontal_blur"),
     vertical_blur_framebuffer_(shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "vertical_blur") {
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
+  glDisable(GL_MULTISAMPLE);
 }
 
 void Renderer::renderFrame(Game &game) {
