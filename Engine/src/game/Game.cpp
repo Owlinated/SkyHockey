@@ -21,11 +21,11 @@ Game::Game(std::shared_ptr<Window> window) :
   puck = std::make_unique<Puck>(puck_shape, puck_texture, glm::vec3());
   puck->velocity = glm::vec3(0, 0, -0.3f);
 
-  entities.emplace_back(table.get());
-  entities.emplace_back(score_board.get());
-  entities.emplace_back(puck.get());
-  entities.emplace_back(striker_player.get());
-  entities.emplace_back(striker_opponent.get());
+  entities = std::vector<GameEntity*>{
+    table.get(), score_board.get(),
+    striker_player.get(), striker_opponent.get(),
+    puck.get()
+  };
 }
 
 void striker_puck_collision_test(std::unique_ptr<Striker> &striker, std::unique_ptr<Puck> &puck) {
