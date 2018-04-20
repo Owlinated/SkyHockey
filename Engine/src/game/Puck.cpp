@@ -97,5 +97,4 @@ void Puck::updateLocation(float delta_time) {
 void Puck::update(float delta_time) {
   updateVelocity(delta_time);
   updateLocation(delta_time);
-  GameEntity::update(delta_time);
 }

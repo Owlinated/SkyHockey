@@ -57,10 +57,11 @@ void Renderer::renderForward(Game &game) {
   forward_shader.use();
 
   for (auto &entity: game.entities) {
-    auto model_view_projection = view_projection * entity->model;
-    auto depth_model_view_projection_window = depth_view_projection_window * entity->model;
+    auto model = entity->model();
+    auto model_view_projection = view_projection * model;
+    auto depth_model_view_projection_window = depth_view_projection_window * model;
 
-    forward_shader.bind(entity->model, "u.model");
+    forward_shader.bind(model, "u.model");
     forward_shader.bind(game.camera.view, "u.view");
     forward_shader.bind(model_view_projection, "u.model_view_projection");
     forward_shader.bind(depth_model_view_projection_window, "u.depth_model_view_projection_window");
@@ -97,10 +98,11 @@ void Renderer::renderDeferred(Game &game) {
   deferred_prepare_shader.use();
 
   for (auto &entity: game.entities) {
-    auto model_view_projection = view_projection * entity->model;
-    auto velocity_cameraspace = glm::vec2(model_view_projection * glm::vec4(entity->getVelocity(), 0));
+    auto model = entity->model();
+    auto model_view_projection = view_projection * model;
+    auto velocity_cameraspace = glm::vec2(model_view_projection * glm::vec4(entity->velocity, 0));
 
-    deferred_prepare_shader.bind(entity->model, "u.model");
+    deferred_prepare_shader.bind(model, "u.model");
     deferred_prepare_shader.bind(model_view_projection, "u.model_view_projection");
     deferred_prepare_shader.bind(velocity_cameraspace, "u.velocity_cameraspace");
     deferred_prepare_shader.bind(entity->id, "u.object_id");
@@ -165,7 +167,8 @@ void Renderer::renderShadowMap(Game &game,
   glEnable(GL_DEPTH_TEST);
 
   for (auto &entity: game.entities) {
-    auto depth_model_view_projection = depth_view_projection * entity->model;
+    auto model = entity->model();
+    auto depth_model_view_projection = depth_view_projection * model;
     shadow_map_shader.bind(depth_model_view_projection, "u.model_view_projection");
     shadow_map_shader.bind(depth_attenuation, "u.depth_attenuation");
 
@@ -213,8 +216,8 @@ void Renderer::renderBackground(Game &game, IFramebuffer &output) {
 void Renderer::renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr<Texture> &velocity, IFramebuffer &output) {
   static Shader motion_blur_shader("Quad.vert", "BlurMotion.frag");
   motion_blur_shader.use();
-  motion_blur_shader.bind(8, "u.sample_count");
-  motion_blur_shader.bind(0.2f, "u.step_size");
+  motion_blur_shader.bind(Config::motion_blur_steps, "u.sample_count");
+  motion_blur_shader.bind(Config::motion_blur_step_size, "u.step_size");
   motion_blur_shader.bind(color, "u_color_texture", 0);
   motion_blur_shader.bind(velocity, "u_velocity_map", 1);
 

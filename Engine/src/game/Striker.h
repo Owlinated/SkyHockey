@@ -12,14 +12,12 @@ class Striker : public GameEntity {
   void updateLocation(float delta_time);
   float speed_up;
  public:
-  glm::vec3 velocity;
   Striker(std::shared_ptr<Shape> shape,
           std::shared_ptr<Texture> texture,
           glm::vec3 location,
           float target_location_time);
   glm::vec3 target_location;
   void update(float delta_time) override;
-  glm::vec3 getVelocity() override { return velocity; };
 };
 
 #endif //ENGINE_STRIKER_H

@@ -95,5 +95,6 @@ void Game::update(float deltaTime) {
   striker_puck_collision_test(striker_player, puck);
   striker_puck_collision_test(striker_opponent, puck);
 
-  score_board->location = glm::vec3(cos(total_time / 3), 0.1, 1.0);
+  score_board->location = glm::vec3(cos(total_time * 3), 0.1, 1.0);
+  score_board->velocity = glm::vec3(sin(total_time * 3), 0, 0);
 }

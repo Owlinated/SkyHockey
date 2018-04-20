@@ -7,11 +7,9 @@
 
 class GameEntity : public RenderEntity {
  public:
-  GameEntity(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture, glm::vec3 location) :
-      RenderEntity(shape, texture),
-      location(location) {}
+  GameEntity(const std::shared_ptr<Shape> &shape, const std::shared_ptr<Texture> &texture, glm::vec3 location) :
+      RenderEntity(shape, texture, location, glm::vec3()) {}
   virtual void update(float deltaTime);
-  glm::vec3 location;
 };
 
 #endif //ENGINE_GAMEENTITY_H

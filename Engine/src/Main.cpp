@@ -43,6 +43,26 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     std::cout << "Shadow blur decreased to " << Config::shadow_blur_size << std::endl;
   }
 
+  // Map I and K to increasing and decreasing the number of motion blur samples
+  if (key == GLFW_KEY_I && action == GLFW_PRESS) {
+    Config::motion_blur_steps++;
+    std::cout << "Motion blur steps increased to " << Config::motion_blur_steps << std::endl;
+  }
+  if (key == GLFW_KEY_K && action == GLFW_PRESS && Config::motion_blur_steps > 0) {
+    Config::motion_blur_steps--;
+    std::cout << "Motion blur steps decreased to " << Config::motion_blur_steps << std::endl;
+  }
+
+  // Map O and L to increasing and decreasing the motion blur step size
+  if (key == GLFW_KEY_O && action == GLFW_PRESS) {
+    Config::motion_blur_step_size += 0.25f;
+    std::cout << "Motion blur step size increased to " << Config::motion_blur_step_size << std::endl;
+  }
+  if (key == GLFW_KEY_L && action == GLFW_PRESS && Config::motion_blur_step_size > 0) {
+    Config::motion_blur_step_size -= 0.25f;
+    std::cout << "Motion blur step size decreased to " << Config::motion_blur_step_size << std::endl;
+  }
+
   // Close the window when escape is pressed
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);

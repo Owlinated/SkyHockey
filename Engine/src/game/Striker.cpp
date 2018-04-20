@@ -3,8 +3,7 @@
 #include "Striker.h"
 
 Striker::Striker(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture, glm::vec3 location, float target_location_time) :
-    GameEntity(std::move(shape), std::move(texture), location),
-    velocity(),
+    GameEntity(shape, texture, location),
     target_location(location),
     speed_up(1.0f / target_location_time) {
 }
@@ -83,7 +82,6 @@ void Striker::updateLocation(float delta_time) {
 void Striker::update(float delta_time) {
   updateVelocity(delta_time);
   updateLocation(delta_time);
-  GameEntity::update(delta_time);
 }
 
 

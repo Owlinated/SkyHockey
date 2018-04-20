@@ -17,13 +17,14 @@ class RenderEntity {
  private:
   static int id_counter;
  public:
-  RenderEntity(std::shared_ptr<Shape> &shape, std::shared_ptr<Texture> &texture);
+  RenderEntity(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture,
+               glm::vec3 location, glm::vec3 velocity);
   int id;
   std::shared_ptr<Shape> shape;
   std::shared_ptr<Texture> texture;
-  glm::mat4 model;
-  virtual glm::vec3 getVelocity() { return glm::vec3(); };
+  glm::mat4 model();
   Material material;
+  glm::vec3 location, velocity;
 };
 
 #endif //ENGINE_RENDERENTITY_H
