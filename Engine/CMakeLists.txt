@@ -36,7 +36,11 @@ add_executable(${PROJECT_NAME}
         src/renderer/material/TexturePNG.cpp src/renderer/material/TexturePNG.h
         src/renderer/RenderEntity.cpp src/renderer/RenderEntity.h
         src/Config.cpp src/Config.h
-        src/renderer/material/IFramebuffer.h)
+        src/renderer/material/IFramebuffer.h
+        src/renderer/material/Light.h
+        src/renderer/material/Material.h
+        src/support/Animator.cpp src/support/Animator.h
+        src/support/FadeAnimation.cpp src/support/FadeAnimation.h)
 
 target_link_libraries(${PROJECT_NAME}
         ${CONAN_LIBS}

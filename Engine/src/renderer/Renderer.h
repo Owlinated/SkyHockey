@@ -11,14 +11,9 @@
 #include <src/renderer/material/Texture.h>
 #include <src/game/Game.h>
 #include <src/renderer/material/Framebuffer.h>
+#include <src/renderer/material/Light.h>
 #include "src/support/Window.h"
 #include "RenderEntity.h"
-
-struct Light {
-  Light() : position_worldspace(0, 2, 0), color(1, 1, 1) {}
-  glm::vec3 position_worldspace;
-  glm::vec3 color;
-};
 
 class Renderer {
  private:

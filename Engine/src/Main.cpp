@@ -62,6 +62,10 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
   modify(Config::perf_overlay_scale, "performance overlay scale", key,
          GLFW_KEY_Y, GLFW_KEY_H, 0.0f, 10.0f, 0.25f);
 
+  if (key == GLFW_KEY_SPACE) {
+    Game::request_start = true;
+  }
+
   if (key == GLFW_KEY_ESCAPE) {
     glfwSetWindowShouldClose(window, 1);
   }

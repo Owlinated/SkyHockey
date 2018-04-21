@@ -17,14 +17,14 @@ uniform struct Uniforms {
     mat4 depth_view_projection_window;
     float depth_attenuation;
     Light light;
-    Material materials[8];
+    Material materials[20];
 } u;
 
 uniform sampler2D u_deferred_0;
 uniform sampler2D u_deferred_1;
 uniform sampler2D u_deferred_2;
 uniform sampler2D u_shadow_map;
-uniform sampler2D u_color_texture[8];
+uniform sampler2D u_color_texture[20];
 
 layout(location = 0) out vec3 out_color;
 
