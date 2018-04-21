@@ -130,7 +130,7 @@ install:
 script:
   - cd "${TRAVIS_BUILD_DIR}/Engine"
   # Glew takes more than 10 minutes to compile in clang 3.6 and 3.7
-  # Workaround using https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-  - travis_wait 60 conan install ./ --build
+  # Also sometimes sourceforge does not work, retry a few times.
+  - travis_retry travis_wait 60 conan install ./ --build
   - cmake ./
   - cmake --build ./ --target Engine

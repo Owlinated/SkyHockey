@@ -311,9 +311,9 @@ void Renderer::renderPerfOverlay(IFramebuffer &output, float deltaTime) {
   frame_times_offset %= frame_count;
 
   perf_overlay_shader.use();
-  perf_overlay_shader.bind(frame_times, "u_frame_times");
-  perf_overlay_shader.bind(frame_times_offset, "u_frame_times_offset");
-  perf_overlay_shader.bind(Config::perf_overlay_scale, "u_scale");
+  perf_overlay_shader.bind(frame_times, "u.frame_times");
+  perf_overlay_shader.bind(frame_times_offset, "u.frame_times_offset");
+  perf_overlay_shader.bind(Config::perf_overlay_scale, "u.scale");
 
   output.bind();
   glDisable(GL_DEPTH_TEST);

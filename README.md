@@ -27,7 +27,7 @@ E.g. `-s compiler=gcc -s compiler.version=6.1`
 1. Create build files: `cmake ./`  
 Again, you might want to specify your profile:  
 E.g. `-G "MinGW Makefiles"`
-2. Build the project with your toolchain. E.g. `cmake --build ./ --target Engine`
+2. Build the project: `cmake --build ./ --target Engine`
 
 ## Controls
 // TODO
