@@ -1,4 +1,4 @@
-# SkyHockey - Air Hockey in Space
+# SkyHockey - Air Hockey in Space [![Build Status](https://travis-ci.org/Owlinated/SkyHockey.svg?branch=master)](https://travis-ci.org/Owlinated/SkyHockey)
 
 // TODO intro
 
@@ -18,7 +18,7 @@ Don't you just love setting up C++ projects? Here we go.
 
 1. Clone the repository: `git clone --recurse-submodules https://github.com/Owlinated/SkyHockey`
 2. Navigate into directory: `cd SkyHockey/Engine`
-3. Get dependencies: `conan install ./ --build missing`  
+3. Get dependencies: `conan install ./ --build`  
 Depending on your environment you might want to specify your compiler:  
 E.g. `-s compiler=gcc -s compiler.version=6.1`
 

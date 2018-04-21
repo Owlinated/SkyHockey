@@ -1,5 +1,6 @@
 # CMake entry point
 cmake_minimum_required(VERSION 3.9)
+set (CMAKE_CXX_STANDARD 14)
 set(PROJECT_NAME "Engine")
 project(${PROJECT_NAME})
 
