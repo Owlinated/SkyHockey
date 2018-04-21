@@ -9,9 +9,11 @@ class Config {
   static bool forward_rendering;
   static bool fancy_background;
   static int shadow_blur_size;
-  static void parse(std::vector<std::string> arguments);
   static int motion_blur_steps;
   static float motion_blur_step_size;
+  static bool perf_overlay;
+  static float perf_overlay_scale;
+  static void parse(std::vector<std::string> arguments);
 };
 
 #endif //ENGINE_CONFIG_H

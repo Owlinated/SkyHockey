@@ -16,29 +16,43 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     shadow_height_(1024),
     shadow_clip_near_(1.0f),
     shadow_clip_far_(4.0f),
-    depth_projection_matrix_(glm::perspective<float>(glm::radians(50.0f), shadow_width_ / shadow_height_, shadow_clip_near_, shadow_clip_far_)),
+    total_time_(0.0f),
+    depth_projection_matrix_(glm::perspective<float>(glm::radians(50.0f), shadow_width_ / shadow_height_,
+                                                     shadow_clip_near_, shadow_clip_far_)),
     depth_view_matrix_(glm::lookAt(light_.position_worldspace, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0))),
-    shadow_map_framebuffer_(shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "shadowmap"),
-    deferred_framebuffer_(window->width, window->height, 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
-    motion_blur_framebuffer_(window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
-    horizontal_blur_framebuffer_(shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "horizontal_blur"),
-    vertical_blur_framebuffer_(shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "vertical_blur") {
+    shadow_map_framebuffer_(
+        shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "shadowmap"),
+    deferred_framebuffer_(
+        window->width, window->height, 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
+    motion_blur_framebuffer_(
+        window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
+    horizontal_blur_framebuffer_(
+        shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "horizontal_blur"),
+    vertical_blur_framebuffer_(
+        shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "vertical_blur") {
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   glDisable(GL_MULTISAMPLE);
 }
 
-void Renderer::renderFrame(Game &game) {
+void Renderer::renderFrame(Game &game, float delta_time) {
+  total_time_ += delta_time;
+
   if (Config::forward_rendering){
-    renderForward(game);
+    renderForward(game, delta_time);
   } else {
-    renderDeferred(game);
+    renderDeferred(game, delta_time);
   }
+
+  if (Config::perf_overlay) {
+    renderPerfOverlay(*window_, delta_time);
+  }
+
   glfwSwapBuffers(window_->handle);
 }
 
-void Renderer::renderForward(Game &game) {
+void Renderer::renderForward(Game &game, float delta_time) {
   auto view_projection = game.camera.projection * game.camera.view;
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
   auto depth_view_projection_window = window_matrix_ * depth_view_projection;
@@ -47,7 +61,7 @@ void Renderer::renderForward(Game &game) {
   renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection, depth_attenuation,
                   horizontal_blur_framebuffer_, vertical_blur_framebuffer_);
 
-  renderBackground(game, *window_);
+  renderBackground(game, *window_, total_time_);
 
   window_->bind();
   glClear(GL_DEPTH_BUFFER_BIT);
@@ -81,7 +95,7 @@ void Renderer::renderForward(Game &game) {
   }
 }
 
-void Renderer::renderDeferred(Game &game) {
+void Renderer::renderDeferred(Game &game, float delta_time) {
   auto view_projection = game.camera.projection * game.camera.view;
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
   auto depth_view_projection_window = window_matrix_ * depth_view_projection;
@@ -112,7 +126,7 @@ void Renderer::renderDeferred(Game &game) {
   }
 
   // TODO merge space shader into deferred render
-  renderBackground(game, motion_blur_framebuffer_);
+  renderBackground(game, motion_blur_framebuffer_, total_time_);
 
   static Shader deferred_render_shader("Quad.vert", "DeferredRender.frag");
   deferred_render_shader.use();
@@ -184,14 +198,13 @@ void Renderer::renderShadowMap(Game &game,
   glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-void Renderer::renderBackground(Game &game, IFramebuffer &output) {
+void Renderer::renderBackground(Game &game, IFramebuffer &output, float total_time) {
   if(!Config::fancy_background) {
     output.bind();
     glClear(GL_COLOR_BUFFER_BIT);
     return;
   }
 
-  auto currentFrame = static_cast<float>(glfwGetTime());
   auto resolution = glm::vec3(output.getWidth(), output.getHeight(), 0);
   auto a = glm::fastLog(1.0f + glm::fastLength(game.striker_player->velocity)) * 0.1f;
   auto b = glm::fastLog(1.0f + glm::fastLength(game.puck->velocity)) * 0.3f;
@@ -199,7 +212,7 @@ void Renderer::renderBackground(Game &game, IFramebuffer &output) {
 
   static Shader space_shader("Quad.vert", "Space.frag");
   space_shader.use();
-  space_shader.bind(currentFrame, "u.time");
+  space_shader.bind(total_time, "u.time");
   space_shader.bind(resolution, "u.resolution");
   space_shader.bind(1.0f, "u.frequencies[0]");
   space_shader.bind(a, "u.frequencies[1]");
@@ -213,7 +226,8 @@ void Renderer::renderBackground(Game &game, IFramebuffer &output) {
   quad->draw();
 }
 
-void Renderer::renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr<Texture> &velocity, IFramebuffer &output) {
+void Renderer::renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr<Texture> &velocity,
+                                IFramebuffer &output) {
   static Shader motion_blur_shader("Quad.vert", "BlurMotion.frag");
   motion_blur_shader.use();
   motion_blur_shader.bind(Config::motion_blur_steps, "u.sample_count");
@@ -285,4 +299,30 @@ void Renderer::renderBidirectionalBlur(std::shared_ptr<Texture> &color,
     output.bind();
     quad->draw();
   }
+}
+
+void Renderer::renderPerfOverlay(IFramebuffer &output, float deltaTime) {
+  static Shader perf_overlay_shader("Quad.vert", "PerfOverlay.frag");
+  // Circular buffer of frame times (in ms)
+  const int frame_count = 100;
+  static std::vector<int> frame_times(frame_count);
+  static int frame_times_offset;
+  frame_times[frame_times_offset++] = static_cast<int>(deltaTime * 1000);
+  frame_times_offset %= frame_count;
+
+  perf_overlay_shader.use();
+  perf_overlay_shader.bind(frame_times, "u_frame_times");
+  perf_overlay_shader.bind(frame_times_offset, "u_frame_times_offset");
+  perf_overlay_shader.bind(Config::perf_overlay_scale, "u_scale");
+
+  output.bind();
+  glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
+  quad->bindVertexOnly();
+  quad->draw();
+
+  glDisable(GL_BLEND);
 }

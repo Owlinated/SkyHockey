@@ -22,50 +22,48 @@ void messageCallback(GLenum source,
   std::cerr << message << std::endl;
 }
 
+void toggle(bool &value, const std::string &name, int key, int toggle_key) {
+  if (key == toggle_key) {
+    value ^= 1;
+    std::cout << "Toggled " << name << " to " << (value ? "on" : "off") << "." << std::endl;
+  }
+}
+
+template <typename Numeric>
+Numeric modify(Numeric& value, const std::string &name, int key, int increase_key, int decrease_key,
+               Numeric min, Numeric max, Numeric step)
+{
+  if (key == increase_key && value < max) {
+    value += step;
+    std::cout << "Increased " << name << " to " << value << "." << std::endl;
+  } else if (key == decrease_key && value > min) {
+    value -= step;
+    std::cout << "Decreased " << name << " to " << value << "." << std::endl;
+  }
+}
+
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-  // Map R(endermode) to switch between forward and deferred rendering
-  if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-    Config::forward_rendering ^= 1;
+  if(action != GLFW_PRESS) {
+    return;
   }
 
-  // Map S(pace) to toggling the fancy background on and off
-  if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-    Config::fancy_background ^= 1;
-  }
+  toggle(Config::forward_rendering, "forward rendering", key,
+         GLFW_KEY_R);
+  toggle(Config::fancy_background, "animated background", key,
+         GLFW_KEY_S);
+  modify(Config::shadow_blur_size, "shadow blur size", key,
+         GLFW_KEY_U, GLFW_KEY_J, 0, 7, 1);
+  modify(Config::motion_blur_steps, "motion blur steps", key,
+         GLFW_KEY_I, GLFW_KEY_K, 0, 10, 1);
+  modify(Config::motion_blur_step_size, "motion blur step size", key,
+         GLFW_KEY_O, GLFW_KEY_L, 0.0f, 10.0f, 0.25f);
+  toggle(Config::perf_overlay, "performance overlay", key,
+         GLFW_KEY_P);
+  modify(Config::perf_overlay_scale, "performance overlay scale", key,
+         GLFW_KEY_Y, GLFW_KEY_H, 0.0f, 10.0f, 0.25f);
 
-  // Map E and D to increasing and decreasing the shadow map blur
-  if (key == GLFW_KEY_E && action == GLFW_PRESS && Config::shadow_blur_size < 7) {
-    Config::shadow_blur_size++;
-    std::cout << "Shadow blur increased to " << Config::shadow_blur_size << std::endl;
-  }
-  if (key == GLFW_KEY_D && action == GLFW_PRESS && Config::shadow_blur_size > 0) {
-    Config::shadow_blur_size--;
-    std::cout << "Shadow blur decreased to " << Config::shadow_blur_size << std::endl;
-  }
-
-  // Map I and K to increasing and decreasing the number of motion blur samples
-  if (key == GLFW_KEY_I && action == GLFW_PRESS) {
-    Config::motion_blur_steps++;
-    std::cout << "Motion blur steps increased to " << Config::motion_blur_steps << std::endl;
-  }
-  if (key == GLFW_KEY_K && action == GLFW_PRESS && Config::motion_blur_steps > 0) {
-    Config::motion_blur_steps--;
-    std::cout << "Motion blur steps decreased to " << Config::motion_blur_steps << std::endl;
-  }
-
-  // Map O and L to increasing and decreasing the motion blur step size
-  if (key == GLFW_KEY_O && action == GLFW_PRESS) {
-    Config::motion_blur_step_size += 0.25f;
-    std::cout << "Motion blur step size increased to " << Config::motion_blur_step_size << std::endl;
-  }
-  if (key == GLFW_KEY_L && action == GLFW_PRESS && Config::motion_blur_step_size > 0) {
-    Config::motion_blur_step_size -= 0.25f;
-    std::cout << "Motion blur step size decreased to " << Config::motion_blur_step_size << std::endl;
-  }
-
-  // Close the window when escape is pressed
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, true);
+  if (key == GLFW_KEY_ESCAPE) {
+    glfwSetWindowShouldClose(window, 1);
   }
 }
 
@@ -94,10 +92,10 @@ int main(int argc, char *argv[]) {
 
       // Update and render game
       game.update(deltaTime);
-      renderer.renderFrame(game);
+      renderer.renderFrame(game, deltaTime);
 
       glfwPollEvents();
-    } while (!glfwWindowShouldClose(window->handle));
+    } while (glfwWindowShouldClose(window->handle) == GLFW_FALSE);
     glfwTerminate();
     return 0;
   } catch (std::exception &exception) {
