@@ -16,9 +16,7 @@ bool Config::perf_overlay = false;
 
 float Config::perf_overlay_scale = 5.0f;
 
-bool Config::anti_aliasing = true;
-
-bool Config::anti_aliasing_edges = false;
+int Config::anti_aliasing_level = 2;
 
 void Config::parse(std::vector<std::string> arguments) {
   for (const auto &arg: arguments) {

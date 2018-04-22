@@ -1,5 +1,6 @@
 #include <iostream>
 #include <src/Config.h>
+#include <src/support/Formatter.h>
 #include "Renderer.h"
 #include "glm/ext.hpp"
 
@@ -335,18 +336,42 @@ void Renderer::renderPerfOverlay(IFramebuffer &output, float deltaTime) {
   glDisable(GL_BLEND);
 }
 
+Shader fxaaShader(int level) {
+  switch (level) {
+    case 0:
+      static Shader fxaa0("FXAA.vert", "FXAA_0.frag");
+      return fxaa0;
+    case 1:
+      static Shader fxaa1("FXAA.vert", "FXAA_1.frag");
+      return fxaa1;
+    case 2:
+      static Shader fxaa2("FXAA.vert", "FXAA_2.frag");
+      return fxaa2;
+    case 3:
+      static Shader fxaa3("FXAA.vert", "FXAA_3.frag");
+      return fxaa3;
+    case 4:
+      static Shader fxaa4("FXAA.vert", "FXAA_4.frag");
+      return fxaa4;
+    default:
+      throw std::runtime_error(Formatter() << "Invalid fxaa level: " << level);
+  }
+}
+
 void Renderer::renderAliasingBlur(std::shared_ptr<Texture> &color, IFramebuffer &output) {
-  static Shader blur_aliasing_shader("Quad.vert", "BlurAliasing.frag");
+
+  Shader blur_aliasing_shader = fxaaShader(Config::anti_aliasing_level);
+
+  glm::vec2 rcp_frame(1.0/float(output.getWidth()), 1.0/float(output.getHeight()));
 
   blur_aliasing_shader.use();
-  blur_aliasing_shader.bind(static_cast<int>(Config::anti_aliasing), "u_anti_alias");
-  blur_aliasing_shader.bind(static_cast<int>(Config::anti_aliasing_edges), "u_show_edges");
-  blur_aliasing_shader.bind(color, "u_color_texture", 0);
+  blur_aliasing_shader.bind(color, "uSourceTex", 0);
+  blur_aliasing_shader.bind(rcp_frame, "RCPFrame");
 
   output.bind();
   glDisable(GL_DEPTH_TEST);
 
   static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
-  quad->bindVertexOnly();
+  quad->bind();
   quad->draw();
 }

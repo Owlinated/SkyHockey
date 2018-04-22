@@ -61,10 +61,8 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
          GLFW_KEY_P);
   modify(Config::perf_overlay_scale, "performance overlay scale", key,
          GLFW_KEY_Y, GLFW_KEY_H, 0.0f, 10.0f, 0.25f);
-  toggle(Config::anti_aliasing, "anti aliasing", key,
-         GLFW_KEY_A);
-  toggle(Config::anti_aliasing_edges, "anti aliasing edges", key,
-         GLFW_KEY_E);
+  modify(Config::anti_aliasing_level, "anti aliasing level", key,
+         GLFW_KEY_T, GLFW_KEY_G, 0, 4, 1);
 
   if (key == GLFW_KEY_SPACE) {
     Game::request_start = true;
