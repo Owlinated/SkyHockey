@@ -22,8 +22,8 @@ class Renderer {
   float total_time_;
 
   std::shared_ptr<Window> window_;
-  Framebuffer shadow_map_framebuffer_, deferred_framebuffer_,
-      motion_blur_framebuffer_, horizontal_blur_framebuffer_, vertical_blur_framebuffer_;
+  Framebuffer shadow_map_framebuffer_, deferred_framebuffer_, forward_framebuffer_, motion_blur_framebuffer_,
+      horizontal_blur_framebuffer_, vertical_blur_framebuffer_, aliasing_blur_framebuffer_;
   Light light_;
 
   glm::mat4 window_matrix_, depth_projection_matrix_, depth_view_matrix_;
@@ -43,7 +43,8 @@ class Renderer {
                                       IFramebuffer &intermediate,
                                       std::shared_ptr<Texture> &intermediate_color,
                                       IFramebuffer &output);
-  void renderPerfOverlay(IFramebuffer &output, float total_time);
+  static void renderPerfOverlay(IFramebuffer &output, float total_time);
+  static void renderAliasingBlur(std::shared_ptr<Texture> &color, IFramebuffer &output);
  public:
   explicit Renderer(std::shared_ptr<Window> window);
   void renderFrame(Game &game, float delta_time);

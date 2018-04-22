@@ -126,6 +126,7 @@ void Shader::bind(glm::vec4 &vector, const std::string &uniform_name) {
 void Shader::bind(glm::mat4 &matrix, const std::string &uniform_name) {
   glUniformMatrix4fv(getUniform(uniform_name), 1, GL_FALSE, &matrix[0][0]);
 }
+
 void Shader::bind(std::vector<int> &vector, const std::string &uniform_name) {
   glUniform1iv(getUniform(uniform_name), vector.size(), vector.data());
 }

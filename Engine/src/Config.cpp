@@ -16,6 +16,10 @@ bool Config::perf_overlay = false;
 
 float Config::perf_overlay_scale = 5.0f;
 
+bool Config::anti_aliasing = true;
+
+bool Config::anti_aliasing_edges = false;
+
 void Config::parse(std::vector<std::string> arguments) {
   for (const auto &arg: arguments) {
     if (arg == "-f" || arg == "--fullscreen") {

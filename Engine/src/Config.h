@@ -14,6 +14,8 @@ class Config {
   static bool perf_overlay;
   static float perf_overlay_scale;
   static void parse(std::vector<std::string> arguments);
+  static bool anti_aliasing;
+  static bool anti_aliasing_edges;
 };
 
 #endif //ENGINE_CONFIG_H

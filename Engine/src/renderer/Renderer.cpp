@@ -24,12 +24,16 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
         shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "shadowmap"),
     deferred_framebuffer_(
         window->width, window->height, 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
+    forward_framebuffer_(
+        window->width, window->height, 1, true, SamplingMode::Nearest, Precision::Pos16, "forward"),
     motion_blur_framebuffer_(
         window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
     horizontal_blur_framebuffer_(
         shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "horizontal_blur"),
     vertical_blur_framebuffer_(
-        shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "vertical_blur") {
+        shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "vertical_blur"),
+    aliasing_blur_framebuffer_(
+        window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "aliasing_blur") {
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
@@ -61,9 +65,9 @@ void Renderer::renderForward(Game &game, float delta_time) {
   renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection, depth_attenuation,
                   horizontal_blur_framebuffer_, vertical_blur_framebuffer_);
 
-  renderBackground(game, *window_, total_time_);
+  renderBackground(game, forward_framebuffer_, total_time_);
 
-  window_->bind();
+  forward_framebuffer_.bind();
   glClear(GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
 
@@ -93,6 +97,8 @@ void Renderer::renderForward(Game &game, float delta_time) {
     entity->shape->bind();
     entity->shape->draw();
   }
+
+  renderAliasingBlur(forward_framebuffer_.textures[0], *window_);
 }
 
 void Renderer::renderDeferred(Game &game, float delta_time) {
@@ -158,7 +164,9 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
   quad->bindVertexOnly();
   quad->draw();
 
-  renderMotionBlur(motion_blur_framebuffer_.textures[0], deferred_framebuffer_.textures[3], *window_);
+  renderMotionBlur(motion_blur_framebuffer_.textures[0], deferred_framebuffer_.textures[3], aliasing_blur_framebuffer_);
+
+  renderAliasingBlur(aliasing_blur_framebuffer_.textures[0], *window_);
 }
 
 /// Render and blur shadow map. The resulting blurred and mipmapped texture is in vertical_blur_framebuffer
@@ -325,4 +333,20 @@ void Renderer::renderPerfOverlay(IFramebuffer &output, float deltaTime) {
   quad->draw();
 
   glDisable(GL_BLEND);
+}
+
+void Renderer::renderAliasingBlur(std::shared_ptr<Texture> &color, IFramebuffer &output) {
+  static Shader blur_aliasing_shader("Quad.vert", "BlurAliasing.frag");
+
+  blur_aliasing_shader.use();
+  blur_aliasing_shader.bind(static_cast<int>(Config::anti_aliasing), "u_anti_alias");
+  blur_aliasing_shader.bind(static_cast<int>(Config::anti_aliasing_edges), "u_show_edges");
+  blur_aliasing_shader.bind(color, "u_color_texture", 0);
+
+  output.bind();
+  glDisable(GL_DEPTH_TEST);
+
+  static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
+  quad->bindVertexOnly();
+  quad->draw();
 }
