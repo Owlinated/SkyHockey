@@ -32,7 +32,7 @@ in struct VertexData {
     vec4 shadow_coords;
 } v;
 
-layout(location = 0) out vec3 out_color;
+layout(location = 0) out vec4 out_color;
 
 // Compute visibility with variance shadow mapping
 float shadow_visibility(vec4 shadow_coords) {
@@ -71,7 +71,8 @@ void main() {
 
 	vec4 material_color = texture(u_color_texture, v.texture_coords);
 	float visibility = shadow_visibility(v.shadow_coords);
-	out_color = material_color.rgb * u.light.color * (u.material.ambient_multiplier
+	vec3 result = material_color.rgb * u.light.color * (u.material.ambient_multiplier
 	    + visibility * u.material.diffuse_multiplier * cos_normal_light
 	    + visibility * u.material.specular_multiplier * pow(cos_eye_reflection, 5));
+    out_color = vec4(result, 1);
 }

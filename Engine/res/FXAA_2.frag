@@ -1,5 +1,5 @@
 #version 420
-// Taken from: https://github.com/NVIDIAGameWorks/GraphicsSamples/blob/master/samples/es3-kepler/FXAA/assets/shaders/FXAA_Default.frag
+// Taken from https://github.com/NVIDIAGameWorks/GraphicsSamples/blob/master/samples/es3-kepler/FXAA/assets/shaders/FXAA_Default.frag
 
 #define FXAA_PC 1
 #define FXAA_GLSL_130 1

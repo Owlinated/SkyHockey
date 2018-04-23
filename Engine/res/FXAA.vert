@@ -34,19 +34,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //----------------------------------------------------------------------------------
-/*attribute vec2 aPosition;
-attribute vec2 aTexCoord;*/
-
-layout(location = 0) in vec3 in_position;
-layout(location = 1) in vec2 in_texture_coords;
+layout(location = 0) in vec3 iPosition;
+layout(location = 1) in vec2 iTexCoord;
 
 varying vec2 vTexCoord;
 
 void main(void)
 {
-    /*vTexCoord = aTexCoord;
-    gl_Position = vec4(aPosition.x, aPosition.y, 0.0, 1.0);*/
-
-    vTexCoord = in_texture_coords;
-    gl_Position = vec4(in_position.x, in_position.y, 0.0, 1.0);
+    vTexCoord = iTexCoord;
+    gl_Position = vec4(iPosition.x, iPosition.y, 0.0, 1.0);
 }

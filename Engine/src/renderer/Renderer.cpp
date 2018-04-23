@@ -35,14 +35,22 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
         shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "vertical_blur"),
     aliasing_blur_framebuffer_(
         window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "aliasing_blur") {
-  glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   glDisable(GL_MULTISAMPLE);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void Renderer::renderFrame(Game &game, float delta_time) {
   total_time_ += delta_time;
+
+  if (Config::fancy_background) {
+    renderBackground(game, *window_, total_time_);
+  } else {
+    window_->bind();
+    glClear(GL_COLOR_BUFFER_BIT);
+  }
 
   if (Config::forward_rendering){
     renderForward(game, delta_time);
@@ -66,10 +74,8 @@ void Renderer::renderForward(Game &game, float delta_time) {
   renderShadowMap(game, shadow_map_framebuffer_, depth_view_projection, depth_attenuation,
                   horizontal_blur_framebuffer_, vertical_blur_framebuffer_);
 
-  renderBackground(game, forward_framebuffer_, total_time_);
-
   forward_framebuffer_.bind();
-  glClear(GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
 
   static Shader forward_shader("Forward.vert", "Forward.frag");
@@ -132,9 +138,6 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
     entity->shape->draw();
   }
 
-  // TODO merge space shader into deferred render
-  renderBackground(game, motion_blur_framebuffer_, total_time_);
-
   static Shader deferred_render_shader("Quad.vert", "DeferredRender.frag");
   deferred_render_shader.use();
   deferred_render_shader.bind(game.camera.view, "u.view");
@@ -160,6 +163,7 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
   }
 
   motion_blur_framebuffer_.bind();
+  glClear(GL_COLOR_BUFFER_BIT);
   glDisable(GL_DEPTH_TEST);
   static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
   quad->bindVertexOnly();
@@ -208,12 +212,6 @@ void Renderer::renderShadowMap(Game &game,
 }
 
 void Renderer::renderBackground(Game &game, IFramebuffer &output, float total_time) {
-  if(!Config::fancy_background) {
-    output.bind();
-    glClear(GL_COLOR_BUFFER_BIT);
-    return;
-  }
-
   auto resolution = glm::vec3(output.getWidth(), output.getHeight(), 0);
   auto a = glm::fastLog(1.0f + glm::fastLength(game.striker_player->velocity)) * 0.1f;
   auto b = glm::fastLog(1.0f + glm::fastLength(game.puck->velocity)) * 0.3f;
@@ -326,8 +324,8 @@ void Renderer::renderPerfOverlay(IFramebuffer &output, float deltaTime) {
 
   output.bind();
   glDisable(GL_DEPTH_TEST);
+  // Blend over game
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
   quad->bindVertexOnly();
@@ -359,7 +357,6 @@ Shader fxaaShader(int level) {
 }
 
 void Renderer::renderAliasingBlur(std::shared_ptr<Texture> &color, IFramebuffer &output) {
-
   Shader blur_aliasing_shader = fxaaShader(Config::anti_aliasing_level);
 
   glm::vec2 rcp_frame(1.0/float(output.getWidth()), 1.0/float(output.getHeight()));
@@ -370,8 +367,12 @@ void Renderer::renderAliasingBlur(std::shared_ptr<Texture> &color, IFramebuffer 
 
   output.bind();
   glDisable(GL_DEPTH_TEST);
+  // Blend over non anti aliased background
+  glEnable(GL_BLEND);
 
   static std::shared_ptr<Shape> quad = ObjLoader::getQuad();
   quad->bind();
   quad->draw();
+
+  glDisable(GL_BLEND);
 }

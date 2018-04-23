@@ -26,7 +26,7 @@ uniform sampler2D u_deferred_2;
 uniform sampler2D u_shadow_map;
 uniform sampler2D u_color_texture[20];
 
-layout(location = 0) out vec3 out_color;
+layout(location = 0) out vec4 out_color;
 
 // Compute visibility with variance shadow mapping
 float shadow_visibility(vec4 shadow_coords) {
@@ -99,5 +99,6 @@ void main() {
 
     vec4 texture_color = texture(u_color_texture[object_id], texture_coords);
     Material material = u.materials[object_id];
-    out_color = material_light_color(material, texture_color, u.light, position_worldspace, normal_worldspace);
+    vec3 result = material_light_color(material, texture_color, u.light, position_worldspace, normal_worldspace);
+    out_color = vec4(result, 1);
 }
