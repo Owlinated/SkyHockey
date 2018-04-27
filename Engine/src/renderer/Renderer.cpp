@@ -134,6 +134,8 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
     deferred_prepare_shader.bind(velocity_cameraspace, "u.velocity_cameraspace");
     deferred_prepare_shader.bind(entity->id, "u.object_id");
 
+    deferred_prepare_shader.bind(entity->texture, "u_color_texture", 0);
+
     entity->shape->bind();
     entity->shape->draw();
   }
@@ -153,9 +155,6 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
   deferred_render_shader.bind(vertical_blur_framebuffer_.textures[0], "u_shadow_map", 4);
 
   for (auto &entity: game.entities) {
-    auto texture_name = "u_color_texture[" + std::to_string(entity->id) + "]";
-    deferred_render_shader.bind(entity->texture, texture_name.c_str(), 5 + entity->id);
-
     auto material_name = "u.materials[" + std::to_string(entity->id) + "].";
     deferred_render_shader.bind(entity->material.ambient_multiplier, (material_name + "ambient_multiplier").c_str());
     deferred_render_shader.bind(entity->material.diffuse_multiplier, (material_name + "diffuse_multiplier").c_str());

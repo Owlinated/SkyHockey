@@ -24,7 +24,6 @@ uniform sampler2D u_deferred_0;
 uniform sampler2D u_deferred_1;
 uniform sampler2D u_deferred_2;
 uniform sampler2D u_shadow_map;
-uniform sampler2D u_color_texture[20];
 
 layout(location = 0) out vec4 out_color;
 
@@ -90,14 +89,13 @@ void main() {
     // Read properties written by DeferredPrepare.frag
     vec4 position_worldspace = vec4(in_0.xyz, 1);
     vec4 normal_worldspace = vec4(in_1.xyz, 0);
-    vec2 texture_coords = in_2.xy;
-    int object_id = int(in_2.z) - 1;
+    vec4 texture_color = in_2;
+    int object_id = int(in_0.w) - 1;
 
     if (object_id == -1) {
         discard;
     }
 
-    vec4 texture_color = texture(u_color_texture[object_id], texture_coords);
     Material material = u.materials[object_id];
     vec3 result = material_light_color(material, texture_color, u.light, position_worldspace, normal_worldspace);
     out_color = vec4(result, 1);
