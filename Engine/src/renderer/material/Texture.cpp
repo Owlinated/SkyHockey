@@ -8,14 +8,8 @@
 
 Texture::Texture() = default;
 
-Texture::Texture(GLuint handle): handle(handle) {
-  init();
-}
-
-void Texture::init() {
-  bind();
-  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
-  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+Texture::Texture(GLuint handle, int width, int height):
+  handle(handle), width(width), height(height) {
 }
 
 void Texture::bind() {

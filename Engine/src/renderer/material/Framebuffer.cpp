@@ -51,7 +51,7 @@ Framebuffer::Framebuffer(int width,
 
     glObjectLabel(GL_TEXTURE, texture_handle, -1, (fb_name + std::to_string(texture_id)).c_str());
 
-    textures.push_back(std::make_shared<Texture>(texture_handle));
+    textures.push_back(std::make_shared<Texture>(texture_handle, width, height));
   }
 }
 

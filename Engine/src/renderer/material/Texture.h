@@ -9,7 +9,7 @@ class Texture {
   Texture();
   void init();
  public:
-  explicit Texture(GLuint handle);
+  explicit Texture(GLuint handle, int width, int height);
   GLuint handle;
   int width, height;
   void bind();
