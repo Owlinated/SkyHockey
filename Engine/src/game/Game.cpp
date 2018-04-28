@@ -40,6 +40,12 @@ Game::Game(std::shared_ptr<Window> window) :
   score_board->material.ambient_multiplier = glm::vec3(0.9, 0.9, 0.9);
   score_board->material.diffuse_multiplier = glm::vec3(0.1, 0.1, 0.1);
 
+  // Color strikers appropriately
+  striker_player->material.ambient_multiplier *= color_player_;
+  striker_player->material.diffuse_multiplier *= color_player_;
+  striker_opponent->material.ambient_multiplier *= color_opponent_;
+  striker_opponent->material.diffuse_multiplier *= color_opponent_;
+
   entities = std::vector<GameEntity*>{
     table.get(), score_board.get(), score_center.get(),
     striker_player.get(), striker_opponent.get(), puck.get()
@@ -65,7 +71,7 @@ void Game::reset() {
   score_opponent_ = 0;
   animator_.run(std::make_unique<FadeAnimation>(score_center->location, score_center->location, glm::vec3(), 5));
   animator_.run(std::make_unique<FadeAnimation>(
-      score_center->material.ambient_multiplier, score_center->material.ambient_multiplier, glm::vec3(0, 0.5, 0), 5));
+      score_center->material.ambient_multiplier, score_center->material.ambient_multiplier, glm::vec3(0.5, 0.5, 0.5), 5));
   for (int i = 0; i < winning_score - 1; ++i) {
     auto score_player = scores_player[i].get();
     auto score_opponent = scores_opponent[i].get();
@@ -74,13 +80,13 @@ void Game::reset() {
     animator_.run(std::make_unique<FadeAnimation>(
         score_player->material.ambient_multiplier,
         score_player->material.ambient_multiplier,
-        glm::mix(glm::vec3(1, 1, 1), color_player_, i / (float)(2 * winning_score)),
+        glm::mix(glm::vec3(0.5, 0.5, 0.5), color_player_, i / (float)winning_score),
         5));
     animator_.run(std::make_unique<FadeAnimation>(score_opponent->location, score_opponent->location, offset, 5));
     animator_.run(std::make_unique<FadeAnimation>(
         score_opponent->material.ambient_multiplier,
         score_opponent->material.ambient_multiplier,
-        glm::mix(glm::vec3(1, 1, 1), color_opponent_, i / (float)(2 * winning_score)),
+        glm::mix(glm::vec3(0.5, 0.5, 0.5), color_opponent_, i / (float)winning_score),
         5));
   }
   puck->location = glm::vec3();
