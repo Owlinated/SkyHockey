@@ -15,6 +15,9 @@ enum Precision {
   Pos16 = GL_RGBA16, Float16 = GL_RGBA16F, Float32 = GL_RGBA32F
 };
 
+/**
+ * Framebuffer object to render to.
+ */
 class Framebuffer : public IFramebuffer {
  private:
   GLuint handle_;

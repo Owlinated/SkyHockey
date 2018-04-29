@@ -15,6 +15,9 @@
 #include "src/support/Window.h"
 #include "RenderEntity.h"
 
+/**
+ * Renders a list of entities.
+ */
 class Renderer {
  private:
   int shadow_width_, shadow_height_;

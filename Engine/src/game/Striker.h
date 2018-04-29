@@ -5,6 +5,9 @@
 #include <glm/vec3.hpp>
 #include "GameEntity.h"
 
+/**
+ * Holds a striker which is controlled by the player or an agent to score goals.
+ */
 class Striker : public GameEntity {
  private:
   void updateVelocity(float delta_time);

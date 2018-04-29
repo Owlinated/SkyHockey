@@ -5,6 +5,9 @@
 #include <glm/vec3.hpp>
 #include "GameEntity.h"
 
+/**
+ * Holds a puck, which is used to score goals.
+ */
 class Puck : public GameEntity {
  private:
   void updateVelocity(float delta_time);

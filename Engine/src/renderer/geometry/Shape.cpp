@@ -1,5 +1,12 @@
 #include "Shape.h"
 
+/**
+ * Create a new shape.
+ * @param indices Indices of triangles.
+ * @param vertices Position of vertices.
+ * @param normals Objects normals.
+ * @param textures Texture coordinates.
+ */
 Shape::Shape(std::vector<unsigned short> &indices,
              std::vector<glm::vec3> &vertices,
              std::vector<glm::vec3> &normals,
@@ -41,6 +48,9 @@ Shape::Shape(std::vector<unsigned short> &indices,
    */
 }
 
+/**
+ * Bind the shape for rendering.
+ */
 void Shape::bind() {
   glBindVertexArray(handle_);
   glEnableVertexAttribArray(0);
@@ -48,6 +58,10 @@ void Shape::bind() {
   glEnableVertexAttribArray(2);
 }
 
+/**
+ * Bind the shape for rendering.
+ * Don't bind normals or texture coordinates.
+ */
 void Shape::bindVertexOnly() {
   glBindVertexArray(handle_);
   glEnableVertexAttribArray(0);
@@ -55,6 +69,9 @@ void Shape::bindVertexOnly() {
   glDisableVertexAttribArray(2);
 }
 
+/**
+ * Draw all triangles.
+ */
 void Shape::draw() {
   glDrawElements(GL_TRIANGLES, index_count_, GL_UNSIGNED_SHORT, nullptr);
 }

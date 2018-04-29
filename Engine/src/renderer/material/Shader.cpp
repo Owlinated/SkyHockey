@@ -11,6 +11,11 @@
 #include <map>
 #include "Shader.h"
 
+/**
+ * Find errors that occurred during shader compilation.
+ * @param handle Handle of the shader to check.
+ * @param file_path Path of the shader file for debugging.
+ */
 void checkShaderError(GLuint handle, std::string file_path) {
   GLint result = GL_FALSE;
   int info_length;
@@ -25,6 +30,12 @@ void checkShaderError(GLuint handle, std::string file_path) {
   }
 }
 
+/**
+ * Find errors that occurred during program linking.
+ * @param handle Handle of the program to check.
+ * @param vertex_path Path of the loaded vertex shader for debugging.
+ * @param fragment_path Path of the loaded fragment shader for debugging.
+ */
 void checkProgramError(GLuint handle, std::string vertex_path, std::string fragment_path) {
   int info_length;
 
@@ -38,6 +49,11 @@ void checkProgramError(GLuint handle, std::string vertex_path, std::string fragm
   }
 }
 
+/**
+ * Load a shader program from files.
+ * @param vertex_file_path Path of vertex program to load.
+ * @param fragment_file_path Path of fragment program to load.
+ */
 Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_file_path) {
   std::ifstream vertex_stream("res/" + vertex_file_path);
   std::stringstream vertex_buffer;
@@ -74,10 +90,18 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
   glDeleteShader(fragment_handle);
 }
 
+/**
+ * Use program for rendering.
+ */
 void Shader::use() {
   glUseProgram(handle);
 }
 
+/**
+ * Get handle to uniform variable by name.
+ * @param uniform_name Name of variable to get handle for.
+ * @return Handle of uniform variable.
+ */
 GLint Shader::getUniform(const std::string &uniform_name) {
   // Look name up in cache
   auto cache_result = cache_.find(uniform_name);
@@ -96,6 +120,12 @@ GLint Shader::getUniform(const std::string &uniform_name) {
   return result;
 }
 
+/**
+ * Bind textures to shader program.
+ * @param texture Texture to bind to shader.
+ * @param uniform_name Name of variable to bind texture to.
+ * @param unit_index Texture unit index to bind texture to.
+ */
 void Shader::bind(std::shared_ptr<Texture> &texture, const std::string &uniform_name, int unit_index) {
   // Activate texture unit and bind the texture
   glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + unit_index));
@@ -103,30 +133,65 @@ void Shader::bind(std::shared_ptr<Texture> &texture, const std::string &uniform_
   bind(unit_index, uniform_name);
 }
 
+/**
+ * Bind scalar value to shader program.
+ * @param scalar Value to bind to shader.
+ * @param uniform_name Name of variable to bind value to.
+ */
 void Shader::bind(int scalar, const std::string &uniform_name) {
   glUniform1i(getUniform(uniform_name), scalar);
 }
 
+/**
+ * Bind scalar value to shader program.
+ * @param scalar Value to bind to shader.
+ * @param uniform_name Name of variable to bind value to.
+ */
 void Shader::bind(float scalar, const std::string &uniform_name) {
   glUniform1f(getUniform(uniform_name), scalar);
 }
 
+/**
+ * Bind vector value to shader program.
+ * @param vector Value to bind to shader.
+ * @param uniform_name Name of variable to bind vector to.
+ */
 void Shader::bind(glm::vec2 &vector, const std::string &uniform_name) {
   glUniform2f(getUniform(uniform_name), vector.x, vector.y);
 }
 
+/**
+ * Bind vector value to shader program.
+ * @param vector Value to bind to shader.
+ * @param uniform_name Name of variable to bind vector to.
+ */
 void Shader::bind(glm::vec3 &vector, const std::string &uniform_name) {
   glUniform3f(getUniform(uniform_name), vector.x, vector.y, vector.z);
 }
 
+/**
+ * Bind vector value to shader program.
+ * @param vector Value to bind to shader.
+ * @param uniform_name Name of variable to bind vector to.
+ */
 void Shader::bind(glm::vec4 &vector, const std::string &uniform_name) {
   glUniform4f(getUniform(uniform_name), vector.x, vector.y, vector.z, vector.w);
 }
 
+/**
+ * Bind matrix value to shader program.
+ * @param matrix Value to bind to shader.
+ * @param uniform_name Name of variable to bind matrix to.
+ */
 void Shader::bind(glm::mat4 &matrix, const std::string &uniform_name) {
   glUniformMatrix4fv(getUniform(uniform_name), 1, GL_FALSE, &matrix[0][0]);
 }
 
+/**
+ * Bind vector value to shader program.
+ * @param vector Value to bind to shader.
+ * @param uniform_name Name of variable to bind vector to.
+ */
 void Shader::bind(std::vector<int> &vector, const std::string &uniform_name) {
   glUniform1iv(getUniform(uniform_name), vector.size(), vector.data());
 }

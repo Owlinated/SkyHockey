@@ -8,6 +8,9 @@
 #include "Striker.h"
 #include "Puck.h"
 
+/**
+ * Class to hold the current game state.
+ */
 class Game {
  private:
   std::shared_ptr<Window> window_;

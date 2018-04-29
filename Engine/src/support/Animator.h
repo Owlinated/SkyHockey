@@ -5,6 +5,9 @@
 #include <memory>
 #include "FadeAnimation.h"
 
+/**
+ * Holds and update a list of animations.
+ */
 class Animator {
  private:
   std::vector<std::unique_ptr<FadeAnimation>> animations;

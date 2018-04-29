@@ -2,16 +2,31 @@
 #include <utility>
 #include "Striker.h"
 
+/**
+ * Create a new striker.
+ * @param shape Geometry to use for rendering.
+ * @param texture Color texture to use for rendering.
+ * @param location Location to initialize striker at.
+ * @param target_location_time Time in seconds in which to reach a target location.
+ */
 Striker::Striker(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture, glm::vec3 location, float target_location_time) :
     GameEntity(shape, texture, location),
     target_location(location),
     speed_up(1.0f / target_location_time) {
 }
 
+/**
+ * Update the striker's velocity.
+ * @param delta_time Time in seconds since last update.
+ */
 void Striker::updateVelocity(float delta_time) {
   velocity =  (target_location - location) * speed_up;
 }
 
+/**
+ * Test if the striker collides with a corner.
+ * @return True if the striker collides with a corner.
+ */
 bool Striker::corner_collision_test() {
   // Find collision corner
   const float striker_radius = 0.08, corner_radius = 0.2f;
@@ -54,6 +69,10 @@ bool Striker::corner_collision_test() {
   return true;
 }
 
+/**
+ * Update the striker's location.
+ * @param delta_time Time in seconds since last update.
+ */
 void Striker::updateLocation(float delta_time) {
   const float radius = 0.08f;
   static glm::vec3 bound_max(0.6 - radius, 0, 1.2 - radius), bound_min = bound_max * -1.0f;
@@ -79,6 +98,10 @@ void Striker::updateLocation(float delta_time) {
   }
 }
 
+/**
+ * Update the striker's velocity and location.
+ * @param delta_time Time in seconds sind last update.
+ */
 void Striker::update(float delta_time) {
   updateVelocity(delta_time);
   updateLocation(delta_time);

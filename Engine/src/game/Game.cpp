@@ -5,6 +5,10 @@
 
 bool Game::request_start = false;
 
+/**
+ * Create a new game instance. Load all resources.
+ * @param window The window to render to.
+ */
 Game::Game(std::shared_ptr<Window> window) :
     window_(std::move(window)),
     obj_loader_("geometry.obj"),
@@ -66,6 +70,9 @@ Game::Game(std::shared_ptr<Window> window) :
   }
 }
 
+/**
+ * Reset score and scoreboard to start a new game.
+ */
 void Game::reset() {
   score_player_ = 0;
   score_opponent_ = 0;
@@ -93,6 +100,11 @@ void Game::reset() {
   puck->velocity = glm::vec3(0, 0, -0.3f);
 }
 
+/**
+ * Check and handle collisions between a striker and the puck.
+ * @param striker Agent/Player controlled striker.
+ * @param puck The puck used to score goals.
+ */
 void Game::striker_puck_collision_test(std::unique_ptr<Striker> &striker, std::unique_ptr<Puck> &puck) {
   const float radius = 0.08f;
   auto location_difference = puck->location - striker->location;
@@ -113,6 +125,10 @@ void Game::striker_puck_collision_test(std::unique_ptr<Striker> &striker, std::u
   }
 }
 
+/**
+ * Check if a puck has crossed a goal line.
+ * @param puck The puck used to score goals.
+ */
 void Game::goal_test(std::unique_ptr<Puck> &puck) {
   if (puck->location.z < -1.2f) {
     score_player_ ++;
@@ -169,6 +185,10 @@ void Game::goal_test(std::unique_ptr<Puck> &puck) {
   }
 }
 
+/**
+ * Update the game state.
+ * @param delta_time Time in seconds since last update.
+ */
 void Game::update(float delta_time) {
   static auto total_time = 0.0f;
   total_time += delta_time;

@@ -3,6 +3,10 @@
 
 #include <string>
 #include <vector>
+
+/**
+ * Global game config
+ */
 class Config {
  public:
   static bool full_screen;

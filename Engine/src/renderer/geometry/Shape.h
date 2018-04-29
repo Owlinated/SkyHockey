@@ -6,6 +6,9 @@
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 
+/**
+ * Shape to contain all geometry arrays.
+ */
 class Shape {
  private:
   GLuint handle_;

@@ -12,6 +12,10 @@
 #include "ObjLoader.h"
 #include "src/support/Formatter.h"
 
+/**
+ * Create a new loader to load shapes from an .obj file.
+ * @param path Path to .obj file.
+ */
 ObjLoader::ObjLoader(const std::string& path) {
   const char* file_path = ("res/" +  path).c_str();
   std::string err;
@@ -22,6 +26,11 @@ ObjLoader::ObjLoader(const std::string& path) {
   }
 }
 
+/**
+ * Load shape from .obj file with the specified name.
+ * @param name Name of shape to load.
+ * @return Loaded shape.
+ */
 std::shared_ptr<Shape> ObjLoader::loadShape(const std::string &name) {
   for (auto &shape: shapes) {
     if (shape.name == name) {
@@ -31,6 +40,11 @@ std::shared_ptr<Shape> ObjLoader::loadShape(const std::string &name) {
   throw std::runtime_error(Formatter() << "Could not find object with name: " << name);
 }
 
+/**
+ * Load a shape internally. Converts a tinyobj shape into useful arrays.
+ * @param shape Shape to load into memory.
+ * @return A shape containing the loaded arrays
+ */
 std::shared_ptr<Shape> ObjLoader::loadShape(const tinyobj::shape_t shape) {
   std::vector<unsigned short> indices;
   std::vector<glm::vec3> vertices;
@@ -70,6 +84,10 @@ std::shared_ptr<Shape> ObjLoader::loadShape(const tinyobj::shape_t shape) {
   return std::make_shared<Shape>(indices, vertices, normals, textures);
 }
 
+/**
+ * Create a screen sizes quad.
+ * @return Shape containing the quad.
+ */
 std::shared_ptr<Shape> createQuad() {
   std::vector<unsigned short> indices = {0, 1, 2, 2, 1, 3};
   std::vector<glm::vec3> vertices = {glm::vec3(-1, -1, 0), glm::vec3(1, -1, 0), glm::vec3(-1, 1, 0), glm::vec3(1, 1, 0)};

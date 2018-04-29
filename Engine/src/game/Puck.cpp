@@ -2,10 +2,20 @@
 #include <utility>
 #include "Puck.h"
 
+/**
+ * Create a new puck to score goals with.
+ * @param shape Geometry to use for rendering.
+ * @param texture Color texture to use for rendering.
+ * @param location Location to initialize puck at.
+ */
 Puck::Puck(std::shared_ptr<Shape> shape, std::shared_ptr<Texture> texture, glm::vec3 location) :
     GameEntity(std::move(shape), std::move(texture), location) {
 }
 
+/**
+ * Update the puck's velocity.
+ * @param delta_time Time in seconds since last update.
+ */
 void Puck::updateVelocity(float delta_time){
   const double linear_friction = 0.01, constant_friction = 0.05;
 
@@ -26,6 +36,10 @@ void Puck::updateVelocity(float delta_time){
   }
 }
 
+/**
+ * Test and handle collisions with the tables corners.
+ * @return True if the puck collided with a corner.
+ */
 bool Puck::corner_collision_test() {
   // Find collision corner
   const float puck_radius = 0.08, corner_radius = 0.2f;
@@ -64,6 +78,10 @@ bool Puck::corner_collision_test() {
   return true;
 }
 
+/**
+ * Update the puck's location.
+ * @param delta_time Time in seconds since last update.
+ */
 void Puck::updateLocation(float delta_time) {
   const float bounce_slowdown = 0.8, radius = 0.08;
   static glm::vec3 bound_max(0.6 - radius, 0, 1.2 - radius), bound_min = bound_max * -1.0f;
@@ -94,6 +112,10 @@ void Puck::updateLocation(float delta_time) {
   velocity *= bounce_slowdown;
 }
 
+/**
+ * Update the puck's velocity and location.
+ * @param delta_time Time in seconds since last update.
+ */
 void Puck::update(float delta_time) {
   updateVelocity(delta_time);
   updateLocation(delta_time);

@@ -11,6 +11,9 @@
 #include <src/renderer/Renderer.h>
 #include "Config.h"
 
+/**
+ * OpenGL callback for warnings and errors.
+ */
 void messageCallback(GLenum source,
                      GLenum type,
                      GLuint id,
@@ -22,6 +25,13 @@ void messageCallback(GLenum source,
   std::cerr << message << std::endl;
 }
 
+/**
+ * Toggle a boolean value based on a key code.
+ * @param value Property to toggle.
+ * @param name Name of property to output to console.
+ * @param key Current key code.
+ * @param toggle_key Key code for toggling property.
+ */
 void toggle(bool &value, const std::string &name, int key, int toggle_key) {
   if (key == toggle_key) {
     value ^= 1;
@@ -29,8 +39,20 @@ void toggle(bool &value, const std::string &name, int key, int toggle_key) {
   }
 }
 
+/**
+ * Modify a numeric value based on two key codes.
+ * @tparam Numeric Numeric type to update.
+ * @param value Value to update.
+ * @param name Name of property to output to console.
+ * @param key Current key code.
+ * @param increase_key Key code for increasing the value.
+ * @param decrease_key Key code for decreasing the value.
+ * @param min Minimum value for decreasing the property.
+ * @param max Maximum value for increasing the property.
+ * @param step Step size for increments and decrements.
+ */
 template <typename Numeric>
-Numeric modify(Numeric& value, const std::string &name, int key, int increase_key, int decrease_key,
+void modify(Numeric& value, const std::string &name, int key, int increase_key, int decrease_key,
                Numeric min, Numeric max, Numeric step)
 {
   if (key == increase_key && value < max) {
@@ -42,6 +64,14 @@ Numeric modify(Numeric& value, const std::string &name, int key, int increase_ke
   }
 }
 
+/**
+ * Callback on key state change. Applies changes to config.
+ * @param window Window on which key event was registered.
+ * @param key Key with state change.
+ * @param scancode Scancode of change.
+ * @param action Registered key action.
+ * @param mods Key modifiers.
+ */
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
   if(action != GLFW_PRESS) {
     return;
@@ -73,6 +103,12 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
   }
 }
 
+/**
+ * Entry point for engine.
+ * @param argc Number of arguments.
+ * @param argv Arguments pointer.
+ * @return Exit code.
+ */
 int main(int argc, char *argv[]) {
   Config::parse(std::vector<std::string>(argv, argv + argc));
 

@@ -4,6 +4,10 @@
 #include "Renderer.h"
 #include "glm/ext.hpp"
 
+/**
+ * Create a renderer.
+ * @param window Window to display output to.
+ */
 Renderer::Renderer(std::shared_ptr<Window> window) :
     window_(window),
     // Sets x, y, and z to a/2 + 1/2. Moving them from [-1,1] to [0,1].
@@ -42,6 +46,11 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
+/**
+ * Render an output frame.
+ * @param game Game to render.
+ * @param delta_time Time in seconds since last frame.
+ */
 void Renderer::renderFrame(Game &game, float delta_time) {
   total_time_ += delta_time;
 
@@ -65,6 +74,11 @@ void Renderer::renderFrame(Game &game, float delta_time) {
   glfwSwapBuffers(window_->handle);
 }
 
+/**
+ * Render the game using simple forward rendering.
+ * @param game Game to render.
+ * @param delta_time Time in seconds since last frame.
+ */
 void Renderer::renderForward(Game &game, float delta_time) {
   auto view_projection = game.camera.projection * game.camera.view;
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
@@ -108,6 +122,12 @@ void Renderer::renderForward(Game &game, float delta_time) {
   renderAliasingBlur(forward_framebuffer_.textures[0], *window_);
 }
 
+/**
+ * Render a frame in a deferred fashion.
+ * Start by rendering to intermediate framebuffers and minimizing overdraw.
+ * @param game Game to render.
+ * @param delta_time Time in seconds since last frame.
+ */
 void Renderer::renderDeferred(Game &game, float delta_time) {
   auto view_projection = game.camera.projection * game.camera.view;
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
@@ -173,12 +193,15 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
   renderAliasingBlur(aliasing_blur_framebuffer_.textures[0], *window_);
 }
 
-/// Render and blur shadow map. The resulting blurred and mipmapped texture is in vertical_blur_framebuffer
-/// \param game Game which objects to render
-/// \param output Texture to write shadows to
-/// \param depth_view_projection Matrix for transforming world coordinates into shadow cameraspace
-/// \param horizontal_blur_framebuffer Buffer to store horizontally blurred image in
-/// \param vertical_blur_framebuffer Buffer to store vertically blurred image in
+/**
+ * Render and blur shadow map. The resulting blurred and mipmapped texture is in vertical_blur_framebuffer.
+ * @param game Game which objects to render.
+ * @param output Texture to write shadows to.
+ * @param depth_view_projection Matrix for transforming world coordinates into shadow cameraspace.
+ * @param depth_attenuation Depth range of depth map.
+ * @param horizontal_blur_framebuffer uffer to store horizontally blurred image in.
+ * @param vertical_blur_framebuffer Buffer to store vertically blurred image in.
+ */
 void Renderer::renderShadowMap(Game &game,
                                Framebuffer &output,
                                glm::mat4 depth_view_projection,
@@ -210,6 +233,12 @@ void Renderer::renderShadowMap(Game &game,
   glGenerateMipmap(GL_TEXTURE_2D);
 }
 
+/**
+ * Render the space background.
+ * @param game The game to render.
+ * @param output Framebuffer to render to.
+ * @param total_time Total time since game start.
+ */
 void Renderer::renderBackground(Game &game, IFramebuffer &output, float total_time) {
   auto resolution = glm::vec3(output.getWidth(), output.getHeight(), 0);
   auto a = glm::fastLog(1.0f + glm::fastLength(game.striker_player->velocity)) * 0.1f;
@@ -232,6 +261,12 @@ void Renderer::renderBackground(Game &game, IFramebuffer &output, float total_ti
   quad->draw();
 }
 
+/**
+ * Take a color and velocity texture and apply motion blur.
+ * @param color The color source.
+ * @param velocity The velocity source.
+ * @param output Blurred version of the color texture.
+ */
 void Renderer::renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr<Texture> &velocity,
                                 IFramebuffer &output) {
   static Shader motion_blur_shader("Quad.vert", "BlurMotion.frag");
@@ -249,6 +284,13 @@ void Renderer::renderMotionBlur(std::shared_ptr<Texture> &color, std::shared_ptr
   quad->draw();
 }
 
+/**
+ * Apply two dimensional gaussian blur to a color texture.
+ * @param color Color texture to blur.
+ * @param intermediate Intermediate framebuffer to render to.
+ * @param intermediate_color Output color texture of intermediate framebuffer.
+ * @param output Framebuffer to render output to.
+ */
 void Renderer::renderBidirectionalBlur(std::shared_ptr<Texture> &color,
                                        IFramebuffer &intermediate,
                                        std::shared_ptr<Texture> &intermediate_color,
@@ -307,6 +349,11 @@ void Renderer::renderBidirectionalBlur(std::shared_ptr<Texture> &color,
   }
 }
 
+/**
+ * Draw performance overlay ontop of output.
+ * @param output Output to render to.
+ * @param deltaTime Time in seconds since last frame.
+ */
 void Renderer::renderPerfOverlay(IFramebuffer &output, float deltaTime) {
   static Shader perf_overlay_shader("Quad.vert", "PerfOverlay.frag");
   // Circular buffer of frame times (in ms)
@@ -333,6 +380,11 @@ void Renderer::renderPerfOverlay(IFramebuffer &output, float deltaTime) {
   glDisable(GL_BLEND);
 }
 
+/**
+ * Get the FXAA level of a specific quality level.
+ * @param level Quality level of FXAA shader.
+ * @return FXAA shader of matching level.
+ */
 Shader fxaaShader(int level) {
   switch (level) {
     case 0:
@@ -355,6 +407,11 @@ Shader fxaaShader(int level) {
   }
 }
 
+/**
+ * Apply anti aliasing to output.
+ * @param color Color texture input.
+ * @param output The framebuffer to render output to.
+ */
 void Renderer::renderAliasingBlur(std::shared_ptr<Texture> &color, IFramebuffer &output) {
   Shader blur_aliasing_shader = fxaaShader(Config::anti_aliasing_level);
 

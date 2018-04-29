@@ -3,6 +3,11 @@
 #include "src/support/Formatter.h"
 #include "TexturePNG.h"
 
+/**
+ * Load texture from .png file
+ * @param image_path File of .png file.
+ * @param mipmap Whether to load/generate mipmaps.
+ */
 TexturePNG::TexturePNG(const std::string& image_path, bool mipmap) {
   std::vector<unsigned char> buffer, image_flipped, image;
   lodepng::load_file(buffer, "res/" + image_path);

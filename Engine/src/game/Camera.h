@@ -4,6 +4,9 @@
 #include <src/support/Window.h>
 #include <src/support/Animator.h>
 
+/**
+ * Class to hold the current camera properties.
+ */
 class Camera {
  private:
   glm::vec3 position_, look_at_, up_;

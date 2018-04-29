@@ -1,11 +1,27 @@
 #include "Framebuffer.h"
 #include <utility>
 #include <src/support/Formatter.h>
+
+/**
+ * Wrap an existing framebuffer object.
+ * @param handle Handle of framebuffer
+ * @param texture Textures which the framebuffer is rendering to.
+ */
 Framebuffer::Framebuffer(GLuint handle, std::shared_ptr<Texture> texture)
     : handle_(handle) {
   textures.push_back(std::move(texture));
 }
 
+/**
+ * Create a new framebuffer object.
+ * @param width Width of framebuffer to create.
+ * @param height Height of framebuffer to create.
+ * @param texture_count Number of textures to create and bind.
+ * @param depth Whether to create a depth buffer.
+ * @param sample The sampling mode to use.
+ * @param precision The precision to use for textures.
+ * @param fb_name Debug friendly name of framebuffer.
+ */
 Framebuffer::Framebuffer(int width,
                          int height,
                          int texture_count,
@@ -55,6 +71,9 @@ Framebuffer::Framebuffer(int width,
   }
 }
 
+/**
+ * Activate the framebuffer for rendering.
+ */
 void Framebuffer::bind() {
   glBindFramebuffer(GL_FRAMEBUFFER, handle_);
   glDrawBuffers(texture_count, &draw_buffers[0]);

@@ -4,6 +4,9 @@
 #include <src/Config.h>
 #include "Window.h"
 
+/**
+ * Initialize a new window.
+ */
 Window::Window() {
   if(!glfwInit())
   {
@@ -41,9 +44,11 @@ Window::Window() {
     throw std::runtime_error("Failed to initialize GLEW.");
   }
 }
+
+/**
+ * Bind the window as an output.
+ */
 void Window::bind() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glViewport(0, 0, width, height);
 }
-
-

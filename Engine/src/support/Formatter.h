@@ -1,6 +1,9 @@
 #include <string>
 #include <sstream>
 
+/**
+ * Formatter to use for creating strings with stream operator.
+ */
 class Formatter
 {
  public:

@@ -6,6 +6,9 @@
 #include <memory>
 #include "Shape.h"
 
+/**
+ * Class to load geometry from .obj file.
+ */
 class ObjLoader {
  private:
   tinyobj::attrib_t attrib;

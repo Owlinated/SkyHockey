@@ -6,6 +6,9 @@
 #include <map>
 #include "Texture.h"
 
+/**
+ * Holds a shader program.
+ */
 class Shader {
  private:
   std::map<std::string, int> cache_;

@@ -7,6 +7,9 @@
 #include <src/renderer/geometry/Shape.h>
 #include <src/renderer/material/Material.h>
 
+/**
+ * Entity used for rendering.
+ */
 class RenderEntity {
  private:
   static int id_counter;

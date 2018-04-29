@@ -5,6 +5,9 @@
 #include <GLFW/glfw3.h>
 #include <src/renderer/material/IFramebuffer.h>
 
+/**
+ * Holds a window and can be used instead of a framebuffer for output.
+ */
 class Window : public IFramebuffer {
  public:
   Window();

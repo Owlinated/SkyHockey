@@ -18,6 +18,10 @@ float Config::perf_overlay_scale = 5.0f;
 
 int Config::anti_aliasing_level = 3;
 
+/**
+ * Parse and apply a list of program arguments.
+ * @param arguments Arguments to apply to config.
+ */
 void Config::parse(std::vector<std::string> arguments) {
   for (const auto &arg: arguments) {
     if (arg == "-f" || arg == "--fullscreen") {

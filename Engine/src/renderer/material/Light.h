@@ -3,6 +3,9 @@
 
 #include <glm/vec3.hpp>
 
+/**
+ * Holds light's properties.
+ */
 struct Light {
   Light() : position_worldspace(0, 2, 0), color(1, 1, 1) {}
   glm::vec3 position_worldspace;

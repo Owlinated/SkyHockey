@@ -3,6 +3,9 @@
 
 #include <glm/vec3.hpp>
 
+/**
+ * Fade in/out animation.
+ */
 class FadeAnimation {
  private:
   glm::vec3 &property_;

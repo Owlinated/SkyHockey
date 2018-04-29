@@ -4,6 +4,9 @@
 #include <memory>
 #include <GL/glew.h>
 
+/**
+ * Holds a color texture.
+ */
 class Texture {
  protected:
   Texture();
