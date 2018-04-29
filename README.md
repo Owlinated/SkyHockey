@@ -33,16 +33,17 @@ This software contains source code provided by NVIDIA Corporation.
 
 ## Controls
 
-| Key | Action                                              |
-|-----|-----------------------------------------------------|
-| R   | Change between deferred and forward rendering.      |
-| S   | Toggle animated background on and off.              |
-| U/J | Increase/Decrease smoothness of shadows.            |
-| I/K | Increase/Decrease number of motion blur samples.    |
-| O/L | Increase/Decrease sample step size for motion blur. |
-| T/G | Increase/Decrease anti aliasing quality.            |
-| P   | Toggle performance overlay on and off.              |
-| Y/H | Increase/Decrease performance overlay size.         |
+| Key   | Action                                              |
+|-------|-----------------------------------------------------|
+| SPACE | Start the game.                                     |
+| R     | Change between deferred and forward rendering.      |
+| S     | Toggle animated background on and off.              |
+| U/J   | Increase/Decrease smoothness of shadows.            |
+| I/K   | Increase/Decrease number of motion blur samples.    |
+| O/L   | Increase/Decrease sample step size for motion blur. |
+| T/G   | Increase/Decrease anti aliasing quality.            |
+| P     | Toggle performance overlay on and off.              |
+| Y/H   | Increase/Decrease performance overlay size.         |
 
 ## Installation
 

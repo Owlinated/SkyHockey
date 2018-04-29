@@ -14,7 +14,7 @@ class ObjLoader {
   std::shared_ptr<Shape> loadShape(tinyobj::shape_t shape);
   static std::shared_ptr<Shape> quad;
  public:
-  explicit ObjLoader(const char *path);
+  explicit ObjLoader(const std::string& path);
   std::shared_ptr<Shape> loadShape(const std::string &name);
   static std::shared_ptr<Shape> getQuad();
 };

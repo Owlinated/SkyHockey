@@ -12,6 +12,9 @@ find_package(OpenGL REQUIRED)
 # Compile non-conan dependencies
 add_subdirectory(lib)
 
+# Use static linking
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
+
 include_directories(
         lib/tinyobjloader/
         lib/lodepng/
@@ -51,7 +54,26 @@ target_link_libraries(${PROJECT_NAME}
 
 # Copy shaders to build directory
 add_custom_target(copy_resources ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/res
         COMMENT "Copy Resources")
 
 add_dependencies(${PROJECT_NAME} copy_resources)
+
+# Setup installer
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)
+install(DIRECTORY res
+        DESTINATION ./)
+
+SET(CPACK_PACKAGE_NAME "SkyHockey")
+SET(CPACK_PACKAGE_VERSION_MAJOR 1)
+SET(CPACK_PACKAGE_VERSION_MINOR 0)
+SET(CPACK_PACKAGE_VERSION_PATCH 0)
+SET(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/../README.md)
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "AirHockey in Space")
+SET(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/../LICENSE)
+SET(CPACK_PACKAGE_EXECUTABLES "${PROJECT_NAME};SkyHockey")
+SET(CPACK_CREATE_DESKTOP_LINKS "${PROJECT_NAME}")
+include(CPack)

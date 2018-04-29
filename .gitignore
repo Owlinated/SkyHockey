@@ -28,3 +28,11 @@ Engine/conaninfo\.txt
 Engine/bin/
 *.cbp
 *.a
+Engine/\.vscode/
+Engine/_CPack_Packages/
+
+Engine/CPackConfig\.cmake
+
+Engine/CPackSourceConfig\.cmake
+
+Engine/install_manifest\.txt

@@ -5,7 +5,7 @@
 
 TexturePNG::TexturePNG(const std::string& image_path, bool mipmap) {
   std::vector<unsigned char> buffer, image_flipped, image;
-  lodepng::load_file(buffer, image_path);
+  lodepng::load_file(buffer, "res/" + image_path);
   unsigned width, height;
   lodepng::State state;
   state.decoder.color_convert = 0;

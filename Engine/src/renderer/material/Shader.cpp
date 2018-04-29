@@ -39,7 +39,7 @@ void checkProgramError(GLuint handle, std::string vertex_path, std::string fragm
 }
 
 Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_file_path) {
-  std::ifstream vertex_stream(vertex_file_path);
+  std::ifstream vertex_stream("res/" + vertex_file_path);
   std::stringstream vertex_buffer;
   vertex_buffer << vertex_stream.rdbuf();
   auto vertex_string = vertex_buffer.str();
@@ -50,7 +50,7 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
   glCompileShader(vertex_handle);
   checkShaderError(vertex_handle, std::string(vertex_file_path));
 
-  std::ifstream fragment_stream(fragment_file_path);
+  std::ifstream fragment_stream("res/" + fragment_file_path);
   std::stringstream fragment_buffer;
   fragment_buffer << fragment_stream.rdbuf();
   auto fragment_string = fragment_buffer.str();

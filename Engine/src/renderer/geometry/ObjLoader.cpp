@@ -12,9 +12,10 @@
 #include "ObjLoader.h"
 #include "src/support/Formatter.h"
 
-ObjLoader::ObjLoader(const char *path) {
+ObjLoader::ObjLoader(const std::string& path) {
+  const char* file_path = ("res/" +  path).c_str();
   std::string err;
-  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, path);
+  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, file_path);
 
   if (!ret) {
     throw std::runtime_error(Formatter() << "Could not parse obj file: " << err);
