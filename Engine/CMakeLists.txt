@@ -12,9 +12,6 @@ find_package(OpenGL REQUIRED)
 # Compile non-conan dependencies
 add_subdirectory(lib)
 
-# Use static linking
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
-
 include_directories(
         lib/tinyobjloader/
         lib/lodepng/
