@@ -18,11 +18,13 @@ In the lower left corner you can find a performance overlay. This indicates the 
 
 ## Credits
 
-I am using the following libraries (not part of this repository):
+I am using the following libraries:
 
-- [GLFW](https://github.com/glfw/glfw)
-- [GLM](https://github.com/g-truc/glm)
-- [GLEW](https://github.com/nigels-com/glew)
+- [GLFW](https://github.com/glfw/glfw) under a [zlib license](https://github.com/glfw/glfw/blob/master/LICENSE.md)
+- [GLM](https://github.com/g-truc/glm) under the [Happy Bunny License](https://github.com/g-truc/glm/blob/master/manual.md#section0)
+- [GLEW](https://github.com/nigels-com/glew) under this [license](https://github.com/nigels-com/glew/blob/master/LICENSE.txt)
+- [tinyobjloader](https://github.com/syoyo/tinyobjloader) under an [MIT license](https://github.com/syoyo/tinyobjloader/blob/master/LICENSE)
+- [lodepng](https://github.com/lvandeve/lodepng) under a [voluntary attribution license](https://github.com/lvandeve/lodepng/blob/d03d7df9888aafb9c7f615895c34b05acf033908/LICENSE)
 
 I adapted these shader:
 
