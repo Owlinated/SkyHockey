@@ -3,10 +3,13 @@
 This is a small physics based Air Hockey game. The project is part of the 2018 CG Course DAT205/DIT226 at Chalmers.
 
 The following features are relevant for the course:
+- Game
 - Deferred Shading
 - Variance Shadow Mapping
 - Motion Blur
 - FXAA
+- Collision detection and basic physics
+- Performance overlay
 
 You, the player, control the blue striker with your mouse and try to push the puck into the opponent's goal. The "AI" opponent is a bit overpowered and will probably stop you from scoring most of the time.
 
