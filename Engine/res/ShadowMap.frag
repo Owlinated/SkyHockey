@@ -11,10 +11,11 @@ void main() {
     float depth = gl_FragCoord.z / gl_FragCoord.w;
     // Normalize to [0,1]
     depth /= u.depth_attenuation;
+    float squared = depth * depth;
     // Move to [-1,1]
-    depth *= 2;
-    depth -= 1;
+    depth = (depth * 2) - 1;
+    squared = (squared * 2) - 1;
 
     // TODO two components are unused, these might be used to store higher precision moments
-	out_color = vec4(depth, depth * depth, 0, 0);
+	out_color = vec4(depth, squared, 0, 0);
 }
