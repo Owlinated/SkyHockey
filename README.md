@@ -17,7 +17,7 @@ The score board above the field indicates the current score, which is most likel
 
 In the lower left corner you can find a performance overlay. This indicates the time required for the last 100 frames. The red line indicates a frame time of 1f/30fps, the green one 1f/60fps. As you can see my poor laptop manages 10fps quite easily!
 
-![Screenshot](screenshot.png?raw=true "Screenshot")
+![Screenshot](Screenshots/game_with_overlay.png?raw=true "Screenshot")
 
 ## Credits
 
@@ -49,6 +49,37 @@ This software contains source code provided by NVIDIA Corporation.
 | T/G   | Increase/Decrease anti aliasing quality.            |
 | P     | Toggle performance overlay on and off.              |
 | Y/H   | Increase/Decrease performance overlay size.         |
+
+## Rendering
+
+This game has two render modes: Forward and deferred.
+
+When using forward rendering everything is very straight forward.
+The process for deferred rendering involves a few intermediate states.
+Let's look at the actual steps:
+
+1. The Shadow map is rendered from the light's perspective.
+    1. 1 Channel: The depth value is normalized and stored.
+        ![Depth](Screenshots/deferred_0_depth.png?raw=true "Depth")
+    2. 1 Channel: The square of the depth is also normalized and stored.
+        ![DepthSquared](Screenshots/deferred_0_depth_squared.png?raw=true "DepthSquared")
+    3. The entire texture is blurred to enable smooth shadows with VSM.
+2. All objects properties are collected in 4 textures. These are the stored channels:
+    1. 1 Channel: The objects ids, for looking up material properties:
+        ![Ids](Screenshots/deferred_1_id.png?raw=true "Ids")
+    2. 3 Channels: The albedo colors, contain the object textures:
+        ![Colors](Screenshots/deferred_1_color.png?raw=true "Colors")
+    3. 3 Channels: The worldspace coordinates, for shadow mapping:
+        ![Coords](Screenshots/deferred_1_coords.png?raw=true "Coords")
+    4. 3 Channels: The surface normals, for lighting:
+        ![Normals](Screenshots/deferred_1_normals.png?raw=true "Normals")
+    5. 2 Channels: The camera space object velocity, for motion blur:
+        ![Velocities](Screenshots/deferred_1_velocity.png?raw=true "Velocities")
+3. The information from all textures is composited into a single texture.
+4. Motion blur is applied to the rendered image.
+5. FXAA is applied to hide aliasing artifacts.
+6. The blurred image is combined with the sharp background.
+7. Finally the performance overlay is drawn ontop of the frame.
 
 ## Installation
 
