@@ -1,6 +1,7 @@
 #include <iostream>
 #include <src/Config.h>
 #include <src/support/Logger.h>
+#include <sstream>
 #include "Renderer.h"
 #include "glm/ext.hpp"
 
@@ -175,10 +176,11 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
   deferred_render_shader.bind(vertical_blur_framebuffer_.textures[0], "u_shadow_map", 4);
 
   for (auto &entity: game.entities) {
-    auto material_name = "u.materials[" + std::to_string(entity->id) + "].";
-    deferred_render_shader.bind(entity->material.ambient_multiplier, (material_name + "ambient_multiplier").c_str());
-    deferred_render_shader.bind(entity->material.diffuse_multiplier, (material_name + "diffuse_multiplier").c_str());
-    deferred_render_shader.bind(entity->material.specular_multiplier, (material_name + "specular_multiplier").c_str());
+    std::stringstream material_name;
+    material_name << "u.materials[" << entity->id << "].";
+    deferred_render_shader.bind(entity->material.ambient_multiplier, (material_name.str() + "ambient_multiplier").c_str());
+    deferred_render_shader.bind(entity->material.diffuse_multiplier, (material_name.str() + "diffuse_multiplier").c_str());
+    deferred_render_shader.bind(entity->material.specular_multiplier, (material_name.str() + "specular_multiplier").c_str());
   }
 
   motion_blur_framebuffer_.bind();
@@ -326,8 +328,9 @@ void Renderer::renderBidirectionalBlur(std::shared_ptr<Texture> &color,
   blur_shader.use();
   blur_shader.bind(cached_size, "u.sample_count");
   for (auto i = 0; i < cached_size; ++i) {
-    auto weight_name = "u.normalized_weights[" + std::to_string(i) + "]";
-    blur_shader.bind(weights[i], weight_name.c_str());
+    std::stringstream weight_name;
+    weight_name << "u.normalized_weights[" << i << "]";
+    blur_shader.bind(weights[i], weight_name.str().c_str());
   }
 
   {
@@ -403,7 +406,9 @@ Shader fxaaShader(int level) {
       static Shader fxaa4("FXAA.vert", "FXAA_4.frag");
       return fxaa4;
     default:
-      Logger::error("Invalid fxaa level: " + std::to_string(level));
+      std::stringstream message;
+      message << "Invalid fxaa level: " << level;
+      Logger::error(message.str());
       static Shader fxaaDefault("FXAA.vert", "FXAA_0.frag");
       return fxaaDefault;
   }

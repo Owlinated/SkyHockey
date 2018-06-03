@@ -1,5 +1,6 @@
 #include "Framebuffer.h"
 #include <utility>
+#include <sstream>
 
 /**
  * Wrap an existing framebuffer object.
@@ -64,7 +65,9 @@ Framebuffer::Framebuffer(int width,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
     glFramebufferTexture(GL_FRAMEBUFFER, attachment, texture_handle, 0);
 
-    glObjectLabel(GL_TEXTURE, texture_handle, -1, (fb_name + std::to_string(texture_id)).c_str());
+    std::stringstream label;
+    label << fb_name << texture_id;
+    glObjectLabel(GL_TEXTURE, texture_handle, -1, label.str().c_str());
 
     textures.push_back(std::make_shared<Texture>(texture_handle, width, height));
   }

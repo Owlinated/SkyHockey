@@ -37,6 +37,7 @@ std::shared_ptr<Shape> ObjLoader::loadShape(const std::string &name) {
     }
   }
   Logger::error("Could not find object with name: " + name);
+  return loadShape(shapes[0]);
 }
 
 /**
