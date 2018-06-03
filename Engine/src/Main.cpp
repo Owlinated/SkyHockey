@@ -9,6 +9,8 @@
 #include <src/renderer/geometry/ObjLoader.h>
 #include <iostream>
 #include <src/renderer/Renderer.h>
+#include <src/support/Logger.h>
+#include <sstream>
 #include "Config.h"
 
 /**
@@ -22,7 +24,7 @@ void messageCallback(GLenum source,
                      const GLchar *message,
                      const void *userParam) {
   // OpenGL debug callback - great location for a breakpoint ;)
-  std::cerr << message << std::endl;
+  Logger::warn(message);
 }
 
 /**
@@ -35,7 +37,9 @@ void messageCallback(GLenum source,
 void toggle(bool &value, const std::string &name, int key, int toggle_key) {
   if (key == toggle_key) {
     value ^= 1;
-    std::cout << "Toggled " << name << " to " << (value ? "on" : "off") << "." << std::endl;
+    std::stringstream message;
+    message << "Toggled " << name << " to " << (value ? "on" : "off") << ".";
+    Logger::info(message.str());
   }
 }
 
@@ -55,12 +59,15 @@ template <typename Numeric>
 void modify(Numeric& value, const std::string &name, int key, int increase_key, int decrease_key,
                Numeric min, Numeric max, Numeric step)
 {
+  std::stringstream message;
   if (key == increase_key && value < max) {
     value += step;
-    std::cout << "Increased " << name << " to " << value << "." << std::endl;
+    message << "Increased " << name << " to " << value << ".";
+    Logger::info(message.str());
   } else if (key == decrease_key && value > min) {
     value -= step;
-    std::cout << "Decreased " << name << " to " << value << "." << std::endl;
+    message << "Decreased " << name << " to " << value << ".";
+    Logger::info(message.str());
   }
 }
 
@@ -141,7 +148,7 @@ int main(int argc, char *argv[]) {
     glfwTerminate();
     return 0;
   } catch (std::exception &exception) {
-    std::cerr << exception.what() << std::endl;
+    Logger::warn("Fatal: " + std::string(exception.what()));
     return 1;
   }
 }

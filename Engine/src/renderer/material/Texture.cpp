@@ -3,7 +3,6 @@
 #include <cstring>
 #include <GL/glew.h>
 #include <stdexcept>
-#include "src/support/Formatter.h"
 #include "Texture.h"
 
 /**

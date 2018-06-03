@@ -1,6 +1,6 @@
 #include <lodepng.h>
 #include <iostream>
-#include "src/support/Formatter.h"
+#include <src/support/Logger.h>
 #include "TexturePNG.h"
 
 /**
@@ -17,7 +17,7 @@ TexturePNG::TexturePNG(const std::string& image_path, bool mipmap) {
   state.decoder.remember_unknown_chunks = 1;
   auto error = lodepng::decode(image_flipped, width, height, state, buffer);
   if(error != 0) {
-    throw std::runtime_error(Formatter() << "Failed to load png: " << lodepng_error_text(error));
+    Logger::error("Failed to load png: " + std::string(lodepng_error_text(error)));
   }
 
   // png has origin in lower left, opengl in upper left, so need to flip

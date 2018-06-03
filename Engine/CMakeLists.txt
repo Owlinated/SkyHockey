@@ -25,7 +25,6 @@ add_executable(${PROJECT_NAME}
         src/renderer/material/Texture.cpp src/renderer/material/Texture.h
         src/renderer/geometry/ObjLoader.cpp src/renderer/geometry/ObjLoader.h
         src/support/Window.cpp src/support/Window.h
-        src/support/Formatter.h
         src/renderer/geometry/Shape.cpp src/renderer/geometry/Shape.h
         src/game/Puck.cpp src/game/Puck.h
         src/game/Striker.cpp src/game/Striker.h
@@ -40,7 +39,8 @@ add_executable(${PROJECT_NAME}
         src/renderer/material/Light.h
         src/renderer/material/Material.h
         src/support/Animator.cpp src/support/Animator.h
-        src/support/FadeAnimation.cpp src/support/FadeAnimation.h)
+        src/support/FadeAnimation.cpp src/support/FadeAnimation.h
+        src/support/Logger.cpp src/support/Logger.cpp)
 
 target_link_libraries(${PROJECT_NAME}
         ${CONAN_LIBS}

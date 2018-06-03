@@ -1,6 +1,5 @@
 #include "Framebuffer.h"
 #include <utility>
-#include <src/support/Formatter.h>
 
 /**
  * Wrap an existing framebuffer object.

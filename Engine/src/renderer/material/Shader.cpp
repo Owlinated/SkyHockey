@@ -7,8 +7,8 @@
 #include <sstream>
 #include <cstring>
 #include <GL/glew.h>
-#include <src/support/Formatter.h>
 #include <map>
+#include <src/support/Logger.h>
 #include "Shader.h"
 
 /**
@@ -25,8 +25,9 @@ void checkShaderError(GLuint handle, std::string file_path) {
   if (info_length > 1) {
     auto error_message = std::make_unique<char[]>(info_length + 1);
     glGetShaderInfoLog(handle, info_length, nullptr, error_message.get());
-    std::string message(error_message.get());
-    throw std::runtime_error(Formatter() << "Shader error in " << file_path << ": " << message);
+    std::stringstream message;
+    message << "Shader error in " << file_path << ": " << error_message.get();
+    Logger::error(message.str());
   }
 }
 
@@ -43,9 +44,9 @@ void checkProgramError(GLuint handle, std::string vertex_path, std::string fragm
   if (info_length > 1) {
     auto error_message = std::make_unique<char[]>(info_length + 1);
     glGetProgramInfoLog(handle, info_length, nullptr, error_message.get());
-    std::string message(error_message.get());
-    throw std::runtime_error(
-        Formatter() << "Error while linking " << vertex_path << " and " << fragment_path << ": " << message);
+    std::stringstream message;
+    message << "Error while linking " << vertex_path << " and " << fragment_path << ": " << error_message.get();
+    Logger::error(message.str());
   }
 }
 
@@ -112,7 +113,7 @@ GLint Shader::getUniform(const std::string &uniform_name) {
   // Look name up in shader
   auto result = glGetUniformLocation(handle, uniform_name.data());
   if (result < 0) {
-    throw std::runtime_error(Formatter() << "Could not find uniform: " << std::string(uniform_name));
+    Logger::error("Could not find uniform: " + uniform_name);
   }
 
   // Create cache entry and return value

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <src/Config.h>
-#include <src/support/Formatter.h>
+#include <src/support/Logger.h>
 #include "Renderer.h"
 #include "glm/ext.hpp"
 
@@ -403,7 +403,9 @@ Shader fxaaShader(int level) {
       static Shader fxaa4("FXAA.vert", "FXAA_4.frag");
       return fxaa4;
     default:
-      throw std::runtime_error(Formatter() << "Invalid fxaa level: " << level);
+      Logger::error("Invalid fxaa level: " + std::to_string(level));
+      static Shader fxaaDefault("FXAA.vert", "FXAA_0.frag");
+      return fxaaDefault;
   }
 }
 

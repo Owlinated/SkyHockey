@@ -9,20 +9,19 @@
 #include <stdexcept>
 #include <iostream>
 #include <tiny_obj_loader.h>
+#include <src/support/Logger.h>
 #include "ObjLoader.h"
-#include "src/support/Formatter.h"
 
 /**
  * Create a new loader to load shapes from an .obj file.
  * @param path Path to .obj file.
  */
 ObjLoader::ObjLoader(const std::string& path) {
-  const char* file_path = ("res/" +  path).c_str();
   std::string err;
-  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, file_path);
+  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, ("res/" +  path).c_str());
 
   if (!ret) {
-    throw std::runtime_error(Formatter() << "Could not parse obj file: " << err);
+    Logger::error("Could not parse obj file: " + err);
   }
 }
 
@@ -37,7 +36,7 @@ std::shared_ptr<Shape> ObjLoader::loadShape(const std::string &name) {
       return loadShape(shape);
     }
   }
-  throw std::runtime_error(Formatter() << "Could not find object with name: " << name);
+  Logger::error("Could not find object with name: " + name);
 }
 
 /**

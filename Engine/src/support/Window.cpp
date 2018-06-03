@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <src/Config.h>
 #include "Window.h"
+#include "Logger.h"
 
 /**
  * Initialize a new window.
@@ -10,7 +11,7 @@
 Window::Window() {
   if(!glfwInit())
   {
-    throw std::runtime_error("Failed to initialize GLFW.");
+    Logger::error("Failed to initialize GLFW.");
   }
 
   glfwWindowHint(GLFW_SAMPLES, 0);
@@ -27,7 +28,7 @@ Window::Window() {
   }
 
   if(handle == nullptr){
-    throw std::runtime_error("Failed to open GLFW window.");
+    Logger::error("Failed to open GLFW window.");
   }
   glfwMakeContextCurrent(handle);
 
@@ -41,7 +42,7 @@ Window::Window() {
 
   glewExperimental = static_cast<GLboolean>(true);
   if (glewInit() != GLEW_OK) {
-    throw std::runtime_error("Failed to initialize GLEW.");
+    Logger::error("Failed to initialize GLEW.");
   }
 }
 
