@@ -390,27 +390,33 @@ void Renderer::renderPerfOverlay(IFramebuffer &output, float deltaTime) {
  */
 Shader fxaaShader(int level) {
   switch (level) {
-    case 0:
+    case 0: {
       static Shader fxaa0("FXAA.vert", "FXAA_0.frag");
       return fxaa0;
-    case 1:
+    }
+    case 1: {
       static Shader fxaa1("FXAA.vert", "FXAA_1.frag");
       return fxaa1;
-    case 2:
+    }
+    case 2: {
       static Shader fxaa2("FXAA.vert", "FXAA_2.frag");
       return fxaa2;
-    case 3:
+    }
+    case 3: {
       static Shader fxaa3("FXAA.vert", "FXAA_3.frag");
       return fxaa3;
-    case 4:
+    }
+    case 4: {
       static Shader fxaa4("FXAA.vert", "FXAA_4.frag");
       return fxaa4;
-    default:
+    }
+    default: {
       std::stringstream message;
       message << "Invalid fxaa level: " << level;
       Logger::error(message.str());
       static Shader fxaaDefault("FXAA.vert", "FXAA_0.frag");
       return fxaaDefault;
+    }
   }
 }
 
