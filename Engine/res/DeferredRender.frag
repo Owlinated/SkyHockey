@@ -13,7 +13,6 @@ struct Material {
 
 uniform struct Uniforms {
     mat4 view;
-    mat4 view_projection;
     mat4 depth_view_projection_window;
     float depth_attenuation;
     Light light;

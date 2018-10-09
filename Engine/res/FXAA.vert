@@ -37,7 +37,7 @@
 layout(location = 0) in vec3 iPosition;
 layout(location = 1) in vec2 iTexCoord;
 
-varying vec2 vTexCoord;
+out vec2 vTexCoord;
 
 void main(void)
 {

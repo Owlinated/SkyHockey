@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
     Renderer renderer(window);
     Game game(window);
 
-    double lastFrameTime = glfwGetTime();
+    auto lastFrameTime = glfwGetTime();
     do {
       auto currentFrame = glfwGetTime();
       auto deltaTime = static_cast<float>(currentFrame - lastFrameTime);

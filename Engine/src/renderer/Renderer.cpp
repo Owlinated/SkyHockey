@@ -164,7 +164,6 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
   static Shader deferred_render_shader("Quad.vert", "DeferredRender.frag");
   deferred_render_shader.use();
   deferred_render_shader.bind(game.camera.view, "u.view");
-  deferred_render_shader.bind(view_projection, "u.view_projection");
   deferred_render_shader.bind(depth_view_projection_window, "u.depth_view_projection_window");
   deferred_render_shader.bind(depth_attenuation, "u.depth_attenuation");
   deferred_render_shader.bind(light_.position_worldspace, "u.light.position_worldspace");
