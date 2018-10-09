@@ -43,10 +43,6 @@ matrix:
     - env: CC=gcc-7 CXX=g++-7
       addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
 
-    # Xcode 6.4
-    - os: osx
-      osx_image: xcode6.4
-
     # Xcode 7.3
     - os: osx
       osx_image: xcode7.3
@@ -117,20 +113,19 @@ install:
     fi
 
   ############################################################################
-  # Setup conan and remote (osx has old six preinstalled and does not allow removing it)
+  # Setup conan and remote (User mode required for osx)
   ############################################################################
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      sudo pip install conan --ignore-installed six
-    else
-      sudo pip install conan
-    fi
-  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan True
+  - pip install --user conan
+  - userbaseconan=$(python -c "import site; print(site.USER_BASE)")
+  - $userbaseconan/bin/conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan True
+
+  ############################################################################
+  # Install conan packages. This might take a while, retry if necessary
+  ############################################################################
+  - cd "${TRAVIS_BUILD_DIR}/Engine"
+  - travis_retry travis_wait 60 $userbaseconan/bin/conan install ./ --build
 
 script:
   - cd "${TRAVIS_BUILD_DIR}/Engine"
-  # Glew takes more than 10 minutes to compile in clang 3.6 and 3.7
-  # Also sometimes sourceforge does not work, retry a few times.
-  - travis_retry travis_wait 60 conan install ./ --build
   - cmake ./
   - cmake --build ./ --target Engine
