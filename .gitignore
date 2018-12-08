@@ -36,3 +36,5 @@ Engine/CPackConfig\.cmake
 Engine/CPackSourceConfig\.cmake
 
 Engine/install_manifest\.txt
+
+build/
