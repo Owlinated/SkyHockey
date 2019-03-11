@@ -40,7 +40,6 @@ Window::Window() {
   glfwPollEvents();
   glfwSetCursorPos(handle, width/2, height/2);
 
-  glewExperimental = static_cast<GLboolean>(true);
   if (glewInit() != GLEW_OK) {
     Logger::error("Failed to initialize GLEW.");
   }

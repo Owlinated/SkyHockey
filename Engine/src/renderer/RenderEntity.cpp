@@ -1,5 +1,5 @@
-#include <glm/gtx/transform.hpp>
 #include "RenderEntity.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 int RenderEntity::id_counter = 0;
 
@@ -25,7 +25,7 @@ glm::mat4 RenderEntity::model() {
   static glm::mat4 last_model;
   if(location != last_location) {
     last_location = location;
-    last_model = glm::translate(glm::mat4(), location);
+    last_model = glm::translate(glm::mat4(1.f), location);
   }
   return last_model;
 }

@@ -57,7 +57,7 @@ Game::Game(std::shared_ptr<Window> window) :
 
   // Create scoreboard elements
   for (auto i = 0; i < winning_score - 1; ++i) {
-    auto offset = score_offset * i;
+    auto offset = score_offset * static_cast<float>(i);
     auto depth_offset = score_depth_offset * (1 - i / (float)winning_score);
     auto score_left = std::make_unique<GameEntity>(score_left_shape, score_left_right_texture, depth_offset - offset);
     auto score_right = std::make_unique<GameEntity>(score_right_shape, score_left_right_texture, depth_offset + offset);
@@ -82,7 +82,7 @@ void Game::reset() {
   for (int i = 0; i < winning_score - 1; ++i) {
     auto score_player = scores_player[i].get();
     auto score_opponent = scores_opponent[i].get();
-    auto offset = score_offset * i;
+    auto offset = score_offset * static_cast<float>(i);
     animator_.run(std::make_unique<FadeAnimation>(score_player->location, score_player->location, -offset, 5));
     animator_.run(std::make_unique<FadeAnimation>(
         score_player->material.ambient_multiplier,
@@ -115,7 +115,7 @@ void Game::striker_puck_collision_test(std::unique_ptr<Striker> &striker, std::u
     // Reflect puck velocity
     float puck_velocity_projection = glm::dot(puck->velocity, location_difference);
     puck->velocity -= 2.0f * location_difference * puck_velocity_projection;
-    puck->location = striker->location + location_difference * (radius + 0.001f) * 2;
+    puck->location = striker->location + location_difference * (radius + 0.001f) * 2.f;
 
     // Transfer striker velocity
     float striker_velocity_projection = glm::dot(striker->velocity, location_difference);
@@ -137,7 +137,7 @@ void Game::goal_test(std::unique_ptr<Puck> &puck) {
       auto score_element = scores_player[score_index].get();
 
       animator_.run(std::make_unique<FadeAnimation>(
-          score_element->location, score_element->location, score_depth_offset - score_offset * score_index, 1));
+          score_element->location, score_element->location, score_depth_offset - score_offset * static_cast<float>(score_index), 1));
       animator_.run(std::make_unique<FadeAnimation>(
           score_element->material.ambient_multiplier, score_element->material.ambient_multiplier, color_player_, 1));
 
@@ -163,7 +163,7 @@ void Game::goal_test(std::unique_ptr<Puck> &puck) {
       auto score_element = scores_opponent[score_index].get();
 
       animator_.run(std::make_unique<FadeAnimation>(
-          score_element->location, score_element->location, score_depth_offset + score_offset * score_index, 1));
+          score_element->location, score_element->location, score_depth_offset + score_offset * static_cast<float>(score_index), 1));
       animator_.run(std::make_unique<FadeAnimation>(
           score_element->material.ambient_multiplier, score_element->material.ambient_multiplier, color_opponent_, 1));
 
@@ -211,10 +211,10 @@ void Game::update(float delta_time) {
   auto location_difference = glm::normalize(puck->location - striker_opponent->location);
   if (puck->location.z < striker_opponent->location.z) {
     striker_opponent->target_location = glm::vec3(0, 0, -1.2f);
-  } else if (puck->location.z > 0 || glm::distance2(striker_opponent->location, puck->location) > 0.2f) {
+  } else if (puck->location.z > 0 || glm::distance(striker_opponent->location, puck->location) > 0.5f) {
     striker_opponent->target_location = glm::vec3(puck->location.x / (puck->location.z + 2.2), 0, -1);
   } else if (glm::dot(puck->velocity, location_difference) < 0.1f) {
-    striker_opponent->target_location = striker_opponent->location + 0.4 * location_difference;
+    striker_opponent->target_location = striker_opponent->location + location_difference * 0.4f;
   }
 
   // update entities

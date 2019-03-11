@@ -1,7 +1,6 @@
 #ifndef ENGINE_STRIKER_H
 #define ENGINE_STRIKER_H
 
-#include <glm/detail/type_mat.hpp>
 #include <glm/vec3.hpp>
 #include "GameEntity.h"
 

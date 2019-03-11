@@ -242,9 +242,9 @@ void Renderer::renderShadowMap(Game &game,
  */
 void Renderer::renderBackground(Game &game, IFramebuffer &output, float total_time) {
   auto resolution = glm::vec3(output.getWidth(), output.getHeight(), 0);
-  auto a = glm::fastLog(1.0f + glm::fastLength(game.striker_player->velocity)) * 0.1f;
-  auto b = glm::fastLog(1.0f + glm::fastLength(game.puck->velocity)) * 0.3f;
-  auto c = glm::fastLog(1.0f + glm::fastLength(game.striker_opponent->velocity)) * 0.1f;
+  auto a = glm::log(1.0f + glm::length(game.striker_player->velocity)) * 0.1f;
+  auto b = glm::log(1.0f + glm::length(game.puck->velocity)) * 0.3f;
+  auto c = glm::log(1.0f + glm::length(game.striker_opponent->velocity)) * 0.1f;
 
   static Shader space_shader("Quad.vert", "Space.frag");
   space_shader.use();
