@@ -24,7 +24,10 @@ void messageCallback(GLenum source,
                      const GLchar *message,
                      const void *userParam) {
   // OpenGL debug callback - great location for a breakpoint ;)
-  Logger::warn(message);
+  if (severity > GL_DEBUG_SEVERITY_NOTIFICATION)
+  {
+    Logger::warn(message);
+  }
 }
 
 /**
