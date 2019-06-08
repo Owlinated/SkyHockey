@@ -14,6 +14,7 @@ add_subdirectory(lib)
 
 include_directories(
         lib/tinyobjloader/
+        lib/oculus/LibOVR/Include
         .
 )
 
@@ -45,6 +46,7 @@ target_link_libraries(${PROJECT_NAME}
         ${CONAN_LIBS}
         ${OPENGL_LIBRARY}
         tiny
+		${CMAKE_SOURCE_DIR}/lib/oculus/LibOVR/Lib/Windows/x64/Release/VS2017/LibOVR.lib
         )
 
 # Copy shaders to build directory
