@@ -14,7 +14,6 @@ add_subdirectory(lib)
 
 include_directories(
         lib/tinyobjloader/
-        lib/lodepng/
         .
 )
 
@@ -46,7 +45,6 @@ target_link_libraries(${PROJECT_NAME}
         ${CONAN_LIBS}
         ${OPENGL_LIBRARY}
         tiny
-        lodepng
         )
 
 # Copy shaders to build directory

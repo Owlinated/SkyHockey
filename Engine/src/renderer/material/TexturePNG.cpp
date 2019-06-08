@@ -1,5 +1,7 @@
-#include <lodepng.h>
 #include <iostream>
+#include <vector>
+
+#include <png.h>
 #include <src/support/Logger.h>
 #include "TexturePNG.h"
 
@@ -9,27 +11,38 @@
  * @param mipmap Whether to load/generate mipmaps.
  */
 TexturePNG::TexturePNG(const std::string& image_path, bool mipmap) {
-  std::vector<unsigned char> buffer, image_flipped, image;
-  lodepng::load_file(buffer, "res/" + image_path);
-  unsigned width, height;
-  lodepng::State state;
-  state.decoder.color_convert = 0;
-  state.decoder.remember_unknown_chunks = 1;
-  auto error = lodepng::decode(image_flipped, width, height, state, buffer);
-  if(error != 0) {
-    Logger::error("Failed to load png: " + std::string(lodepng_error_text(error)));
+  const auto fp = fopen(("res/" + image_path).c_str(), "rb");
+  const auto png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  const auto info = png_create_info_struct(png);
+  png_init_io(png, fp);
+  png_read_info(png, info);
+
+  const auto width = png_get_image_width(png, info);
+  const auto height = png_get_image_height(png, info);
+
+  std::vector<unsigned char> data;
+  data.resize(png_get_rowbytes(png, info) * height);
+  const auto row_pointers = new png_bytep[height];
+  for (auto y = 0; y < height; y++)
+  {
+	  row_pointers[y] = data.data() + y * png_get_rowbytes(png, info);
   }
 
-  // png has origin in lower left, opengl in upper left, so need to flip
-  for (int row = 0; row < height; row++) {
-    for (int col = 0; col < width * 4; col++) {
-      image.push_back(image_flipped[(height - 1 - row) * width * 4 + col]);
+  png_read_image(png, row_pointers);
+  delete[] row_pointers;
+
+  // png has origin in lower left, opengl in upper left, so need to flip 
+  std::vector<unsigned char> image;
+  image.reserve(data.size());
+  for (auto row = 0; row < height; row++) {
+    for (auto col = 0; col < width * 4; col++) {
+      image.push_back(data[(height - 1 - row) * width * 4 + col]);
     }
   }
 
   glGenTextures(1, &handle);
   glBindTexture(GL_TEXTURE_2D, handle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data());
 
   if(mipmap) {
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -43,6 +56,6 @@ TexturePNG::TexturePNG(const std::string& image_path, bool mipmap) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  this->width = (int)width;
-  this->height = (int)height;
+  this->width = static_cast<int>(width);
+  this->height = static_cast<int>(height);
 }
