@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 #include <GL/glew.h>
 #include "Texture.h"
 #include "IFramebuffer.h"
