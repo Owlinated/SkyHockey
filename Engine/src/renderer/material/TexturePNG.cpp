@@ -25,24 +25,15 @@ TexturePNG::TexturePNG(const std::string& image_path, bool mipmap) {
   const auto row_pointers = new png_bytep[height];
   for (auto y = 0; y < height; y++)
   {
-	  row_pointers[y] = data.data() + y * png_get_rowbytes(png, info);
+	  row_pointers[height - 1 - y] = data.data() + y * png_get_rowbytes(png, info);
   }
 
   png_read_image(png, row_pointers);
   delete[] row_pointers;
 
-  // png has origin in lower left, opengl in upper left, so need to flip 
-  std::vector<unsigned char> image;
-  image.reserve(data.size());
-  for (auto row = 0; row < height; row++) {
-    for (auto col = 0; col < width * 4; col++) {
-      image.push_back(data[(height - 1 - row) * width * 4 + col]);
-    }
-  }
-
   glGenTextures(1, &handle);
   glBindTexture(GL_TEXTURE_2D, handle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data());
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data());
 
   if(mipmap) {
     glGenerateMipmap(GL_TEXTURE_2D);
