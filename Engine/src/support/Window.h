@@ -16,6 +16,7 @@ class Window : public IFramebuffer {
   void bind() override;
   int getWidth() override { return width; }
   int getHeight() override { return height; }
+  void EndFrame();
 };
 
 #endif //ENGINE_WINDOW_H

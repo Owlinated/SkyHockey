@@ -12,6 +12,8 @@
 #include <src/support/Logger.h>
 #include <sstream>
 #include "Config.h"
+#include <OVR_CAPI.h>
+#include "support/Oculus.h"
 
 /**
  * OpenGL callback for warnings and errors.
@@ -125,6 +127,7 @@ int main(int argc, char *argv[]) {
   try {
     // Setup window and debug callback
     auto window = std::make_shared<Window>();
+    auto oculus = std::make_shared<Oculus>();
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback((GLDEBUGPROC) messageCallback, nullptr);
@@ -133,19 +136,33 @@ int main(int argc, char *argv[]) {
     glfwSetKeyCallback(window->handle, keyCallback);
   	
     // Create game and renderer
-    Renderer renderer(window);
     Game game(window);
+    Renderer renderers[] = {
+      Renderer(window, game.camera),
+      Renderer(oculus->Left, oculus->Left),
+      Renderer(oculus->Right, oculus->Right)
+    };
 
     auto lastFrameTime = glfwGetTime();
+    long long frameIndex = 0;
     do {
       auto currentFrame = glfwGetTime();
       auto deltaTime = static_cast<float>(currentFrame - lastFrameTime);
       lastFrameTime = currentFrame;
 
       // Update and render game
+      oculus->WaitToBeginFrame(frameIndex);
       game.update(deltaTime);
-      renderer.renderFrame(game, deltaTime);
 
+      oculus->BeginFrame(frameIndex);
+      for (auto& renderer : renderers)
+      {
+        renderer.renderFrame(game, deltaTime);
+      }
+      oculus->EndFrame(frameIndex);
+      window->EndFrame();
+
+      ++frameIndex;
       glfwPollEvents();
     } while (glfwWindowShouldClose(window->handle) == GLFW_FALSE);
     glfwTerminate();

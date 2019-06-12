@@ -25,6 +25,8 @@ add_executable(${PROJECT_NAME}
         src/renderer/material/Texture.cpp src/renderer/material/Texture.h
         src/renderer/geometry/ObjLoader.cpp src/renderer/geometry/ObjLoader.h
         src/support/Window.cpp src/support/Window.h
+        src/support/Oculus.cpp src/support/Oculus.h
+        src/support/OculusEye.cpp src/support/OculusEye.h
         src/renderer/geometry/Shape.cpp src/renderer/geometry/Shape.h
         src/game/Puck.cpp src/game/Puck.h
         src/game/Striker.cpp src/game/Striker.h
