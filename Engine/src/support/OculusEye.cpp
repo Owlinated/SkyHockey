@@ -25,11 +25,7 @@ OculusEye::OculusEye(ovrSession session, ovrEyeType_ eye) : session_(session), e
   desc.SampleCount = 1;
   desc.StaticImage = ovrFalse;
 
-  auto result = ovr_CreateTextureSwapChainGL(session, &desc, &swap_chain_);
-  if (result != ovrSuccess)
-  {
-    Logger::error("Failed to initialize oculus swap chain");
-  }
+  OVR_ASSERT(ovr_CreateTextureSwapChainGL(session, &desc, &swap_chain_), "Ovr swap chain creation failed");
 }
 
 void OculusEye::bind()
@@ -41,7 +37,7 @@ void OculusEye::bind()
 GLuint OculusEye::getHandle()
 {
   GLuint handle;
-  ovr_GetTextureSwapChainBufferGL(session_, swap_chain_, -1, &handle);
+  OVR_ASSERT(ovr_GetTextureSwapChainBufferGL(session_, swap_chain_, -1, &handle), "Ovr swap chain get texture failed");
   return handle;
 }
 
