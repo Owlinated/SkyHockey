@@ -5,16 +5,6 @@
 #include <src/renderer/material/IFramebuffer.h>
 #include "OVR_CAPI.h"
 #include "src/renderer/ICamera.h"
-#include <string>
-#include "Logger.h"
-
-inline void OVR_ASSERT(const ovrResult result, const std::string& message)
-{
-  if (!OVR_SUCCESS(result))
-  {
-    Logger::error(message + " :" + std::to_string(result));
-  }
-}
 
 /**
  * Represents an eye as a render target.
