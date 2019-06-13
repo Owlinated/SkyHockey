@@ -1,10 +1,28 @@
 #include "Oculus.h"
 #include "Extras/OVR_StereoProjection.h"
+#include "Logger.h"
+
+void OvrLogCallback(uintptr_t userData, int level, const char* message)
+{
+  if(level == ovrLogLevel_Error)
+  {
+    Logger::error(message);
+  } else
+  {
+    Logger::info(message);
+  }
+}
 
 Oculus::Oculus()
 {
-  OVR_ASSERT(ovr_Initialize(nullptr), "Ovr initialization failed");
-  OVR_ASSERT(ovr_Create(&session_, &luid_), "Ovr session create failed");
+  ovrInitParams initParams = { 0, 0, OvrLogCallback, 0, 0 };
+  auto result = ovr_Initialize(&initParams);
+  if (!OVR_SUCCESS(result))
+  {
+    Logger::error("Ovr initialization failed :" + std::to_string(result));
+  }
+
+  ovr_Create(&session_, &luid_);
 
   // Set up render targets
   Left = std::make_shared<OculusEye>(session_, ovrEye_Left);
@@ -29,7 +47,7 @@ Oculus::~Oculus()
 
 void Oculus::WaitToBeginFrame(long long frameIndex)
 {
-  OVR_ASSERT(ovr_WaitToBeginFrame(session_, frameIndex), "Ovr wait to begin frame failed");
+  ovr_WaitToBeginFrame(session_, frameIndex);
 }
 
 void Oculus::BeginFrame(long long frameIndex)
@@ -46,14 +64,14 @@ void Oculus::BeginFrame(long long frameIndex)
   Left->updateViewProjection(layer_.RenderPose[Left->eye_]);
   Right->updateViewProjection(layer_.RenderPose[Right->eye_]);
 
-  OVR_ASSERT(ovr_BeginFrame(session_, frameIndex), "Ovr begin frame failed");
+  ovr_BeginFrame(session_, frameIndex);
 }
 
 void Oculus::EndFrame(long long frameIndex)
 {
-  OVR_ASSERT(ovr_CommitTextureSwapChain(session_, Left->swap_chain_), "Ovr commit left swap chain failed");
-  OVR_ASSERT(ovr_CommitTextureSwapChain(session_, Right->swap_chain_), "Ovr commit right swap chain failed");
+  ovr_CommitTextureSwapChain(session_, Left->swap_chain_);
+  ovr_CommitTextureSwapChain(session_, Right->swap_chain_);
 
   const ovrLayerHeader* header = &layer_.Header;
-  OVR_ASSERT(ovr_EndFrame(session_, frameIndex, nullptr, &header, 1), "Ovr end frame failed");
+  ovr_EndFrame(session_, frameIndex, nullptr, &header, 1);
 }
