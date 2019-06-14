@@ -16,7 +16,7 @@ class Game {
   std::shared_ptr<Window> window_;
   ObjLoader obj_loader_;
   Animator animator_;
-  int score_player_, score_opponent_;
+  int score_player_{ 0 }, score_opponent_{ 0 };
   glm::vec3 color_player_, color_opponent_;
   bool running;
   void reset();
