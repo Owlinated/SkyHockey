@@ -37,7 +37,6 @@ class Framebuffer : public IFramebuffer {
   void bind() override;
   int getWidth() override { return width; }
   int getHeight() override { return height; }
-  GLuint getHandle() override { return handle_; }
 };
 
 #endif //ENGINE_FRAMEBUFFER_H
