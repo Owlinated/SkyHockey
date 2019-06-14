@@ -16,7 +16,6 @@ public:
   OculusEye(ovrSession session, ovrEyeType_ eye);
   ~OculusEye();
   void bind() override;
-  GLuint getHandle() override { return handle_; }
   int getWidth() override { return width_; }
   int getHeight() override { return height_; }
   void updateViewProjection(ovrPosef);
