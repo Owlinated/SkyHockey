@@ -9,6 +9,9 @@
 
 OculusEye::OculusEye(ovrSession session, ovrEyeType_ eye) : session_(session), eye_(eye)
 {
+  glGenFramebuffers(1, &handle_);
+  glBindFramebuffer(GL_FRAMEBUFFER, handle_);
+
   const auto hmdDescription = ovr_GetHmdDesc(session_);
   const auto textureSize = ovr_GetFovTextureSize(session_, eye, hmdDescription.DefaultEyeFov[eye_], 1.0f);
   render_desc_ = ovr_GetRenderDesc(session_, ovrEye_Left, hmdDescription.DefaultEyeFov[eye_]);
@@ -26,19 +29,24 @@ OculusEye::OculusEye(ovrSession session, ovrEyeType_ eye) : session_(session), e
   desc.StaticImage = ovrFalse;
 
   ovr_CreateTextureSwapChainGL(session, &desc, &swap_chain_);
+
+  glGenFramebuffers(1, &handle_);
+}
+
+OculusEye::~OculusEye()
+{
+  ovr_DestroyTextureSwapChain(session_, swap_chain_);
 }
 
 void OculusEye::bind()
 {
-  glBindTexture(GL_TEXTURE_2D, getHandle());
-  glViewport(0, 0, width_, height_);
-}
+  GLuint textureHandle;
+  ovr_GetTextureSwapChainBufferGL(session_, swap_chain_, -1, &textureHandle);
 
-GLuint OculusEye::getHandle()
-{
-  GLuint handle;
-  ovr_GetTextureSwapChainBufferGL(session_, swap_chain_, -1, &handle);
-  return handle;
+  glBindFramebuffer(GL_FRAMEBUFFER, handle_);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureHandle, 0);
+
+  glViewport(0, 0, width_, height_);
 }
 
 void OculusEye::updateViewProjection(const ovrPosef pose)

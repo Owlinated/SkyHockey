@@ -4,7 +4,7 @@
 
 void OvrLogCallback(uintptr_t userData, int level, const char* message)
 {
-  if(level == ovrLogLevel_Error)
+  if(level == ovrLogLevel_Error && std::string(message).rfind("Prediction interval too high:") != 0)
   {
     Logger::error(message);
   } else
@@ -41,6 +41,10 @@ Oculus::Oculus()
 
 Oculus::~Oculus()
 {
+  // Free swap chains before shutting session down
+  Left.reset();
+  Right.reset();
+
   ovr_Destroy(session_);
   ovr_Shutdown();
 }
@@ -73,5 +77,6 @@ void Oculus::EndFrame(long long frameIndex)
   ovr_CommitTextureSwapChain(session_, Right->swap_chain_);
 
   const ovrLayerHeader* header = &layer_.Header;
-  ovr_EndFrame(session_, frameIndex, nullptr, &header, 1);
+  const auto numLayers = 1;
+  ovr_EndFrame(session_, frameIndex, nullptr, &header, numLayers);
 }
