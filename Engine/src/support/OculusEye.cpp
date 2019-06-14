@@ -51,28 +51,29 @@ void OculusEye::bind()
 
 void OculusEye::updateViewProjection(const ovrPosef pose)
 {
-  auto originPos = OVR::Vector3f::Zero();
-  auto originRot = OVR::Matrix4f::Identity();
+  OVR::Vector3f Pos2(0, 0.9, 2.0);
+  OVR::Vector3f shiftedEyePos = Pos2 + pose.Position;
 
-  auto pos = originPos + originRot.Transform(pose.Position);
-  auto rot = originRot * OVR::Matrix4f(pose.Orientation);
+  OVR::Matrix4f orientation = OVR::Matrix4f(pose.Orientation);
+  OVR::Vector3f finalUp = orientation.Transform(OVR::Vector3f(0, 1, 0));
+  OVR::Vector3f finalForward = orientation.Transform(OVR::Vector3f(0, 0, -1));
 
-  auto finalUp = rot.Transform(OVR::Vector3f(0, 1, 0));
-  auto finalForward = rot.Transform(OVR::Vector3f(0, 0, -1));
+  OVR::Matrix4f view = OVR::Matrix4f::LookAtRH(shiftedEyePos, shiftedEyePos + finalForward, finalUp);
+  const float near_clipping = 0.01f, far_clipping = 100.0f;
+  OVR::Matrix4f proj = ovrMatrix4f_Projection(render_desc_.Fov, near_clipping, far_clipping, ovrProjection_ClipRangeOpenGL);
 
-  auto view = OVR::Matrix4f::LookAtRH(pos, pos + finalForward, finalUp);
-  auto proj = ovrMatrix4f_Projection(render_desc_.Fov, 0.2f, 1000.0f, 0);
-
-  // Copy OVR matrices to glm
-  // TODO compute them in glm from the get go
-  for(auto x = 0; x < 4; x++)
+  // Copy ovr to glm and switch matrix major
+  for (auto x = 0; x < 4; x++)
   {
     for (auto y = 0; y < 4; y++)
     {
-      view_[x][y] = view.M[x][y];
-      projection_[x][y] = proj.M[x][y];
+      view_[x][y] = view.M[y][x];
+      projection_[x][y] = proj.M[y][x];
     }
   }
+
+  // Flip projection to compensate for oculus displays
+  projection_ = glm::scale(projection_, glm::vec3(1.0f, -1.0f, 1.0f));
 }
 
 void OculusEye::endFrame()
