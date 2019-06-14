@@ -74,3 +74,8 @@ void OculusEye::updateViewProjection(const ovrPosef pose)
     }
   }
 }
+
+void OculusEye::endFrame()
+{
+  ovr_CommitTextureSwapChain(session_, swap_chain_);
+}

@@ -19,6 +19,7 @@ public:
   int getWidth() override { return width_; }
   int getHeight() override { return height_; }
   void updateViewProjection(ovrPosef);
+  void endFrame();
   glm::mat4 getView() override { return view_; }
   glm::mat4 getProjection() override { return projection_; }
 
