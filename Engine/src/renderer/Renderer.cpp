@@ -41,8 +41,18 @@ Renderer::Renderer(std::shared_ptr<IFramebuffer> window, std::shared_ptr<ICamera
         shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "vertical_blur"),
     aliasing_blur_framebuffer_(
         window->getWidth(), window->getHeight(), 1, false, SamplingMode::Nearest, Precision::Pos16, "aliasing_blur") {
+  /**
+  Culling would be nice, but we have a problem
+  We flip the projections for the oculus displays.
+  That reverses the culling order. But it does not
+  change the culling order for everything, e.g. shadow
+  maps are untouched. This means that we would have
+  to be very careful with culling.
+  Unless necessary we will leave this disabled for now.
+
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
+  */
   glDisable(GL_MULTISAMPLE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
