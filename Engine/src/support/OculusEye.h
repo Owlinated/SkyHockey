@@ -14,8 +14,9 @@ class OculusEye : public IFramebuffer, public ICamera
   friend class Oculus;
 public:
   OculusEye(ovrSession session, ovrEyeType_ eye);
+  ~OculusEye();
   void bind() override;
-  GLuint getHandle() override;
+  GLuint getHandle() override { return handle_; }
   int getWidth() override { return width_; }
   int getHeight() override { return height_; }
   void updateViewProjection(ovrPosef);
@@ -23,6 +24,7 @@ public:
   glm::mat4 getProjection() override { return projection_; }
 
 private:
+  GLuint handle_;
   ovrSession session_;
   ovrEyeType_ eye_;
   ovrTextureSwapChain swap_chain_ { };
