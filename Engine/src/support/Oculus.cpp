@@ -73,8 +73,8 @@ void Oculus::BeginFrame(long long frameIndex)
 
 void Oculus::EndFrame(long long frameIndex)
 {
-  ovr_CommitTextureSwapChain(session_, Left->swap_chain_);
-  ovr_CommitTextureSwapChain(session_, Right->swap_chain_);
+  Left->endFrame();
+  Right->endFrame();
 
   const ovrLayerHeader* header = &layer_.Header;
   const auto numLayers = 1;
