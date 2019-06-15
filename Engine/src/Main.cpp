@@ -152,7 +152,11 @@ int main(int argc, char *argv[]) {
 
       // Update and render game
       oculus->WaitToBeginFrame(frameIndex);
-      game.update(deltaTime, oculus->GetActiveHand(frameIndex));
+      game.update(deltaTime, oculus->active_hand_position);
+      if (oculus->request_start_) {
+        oculus->request_start_ = false;
+        game.request_start = true;
+      }
 
       oculus->BeginFrame(frameIndex);
       for (auto& renderer : renderers)
