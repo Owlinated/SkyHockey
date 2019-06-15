@@ -14,7 +14,7 @@ void OvrLogCallback(uintptr_t userData, int level, const char* message)
   }
 }
 
-Oculus::Oculus()
+Oculus::Oculus() : active_hand_position(0.0f, 0.0f, 1.0f)
 {
   ovrInitParams initParams = { 0, 0, OvrLogCallback, 0, 0 };
   auto result = ovr_Initialize(&initParams);
@@ -57,18 +57,43 @@ void Oculus::WaitToBeginFrame(long long frameIndex)
 
 void Oculus::BeginFrame(long long frameIndex)
 {
-  // Get both eye poses simultaneously, with IPD offset already included.
-  auto displayMidpointSeconds = ovr_GetPredictedDisplayTime(session_, 0);
-  auto hmdState = ovr_GetTrackingState(session_, displayMidpointSeconds, ovrTrue);
-  ovrPosef_ hmdToEyeViewPose[] = {
-    Left->render_desc_.HmdToEyePose,
-    Right->render_desc_.HmdToEyePose
-  };
+  {
+    // Update projections
+    auto displayMidpointSeconds = ovr_GetPredictedDisplayTime(session_, 0);
+    auto hmdState = ovr_GetTrackingState(session_, displayMidpointSeconds, ovrTrue);
+    ovrPosef_ hmdToEyeViewPose[] = {
+      Left->render_desc_.HmdToEyePose,
+      Right->render_desc_.HmdToEyePose
+    };
 
-  ovr_CalcEyePoses(hmdState.HeadPose.ThePose, hmdToEyeViewPose, layer_.RenderPose);
-  Left->updateViewProjection(layer_.RenderPose[Left->eye_]);
-  Right->updateViewProjection(layer_.RenderPose[Right->eye_]);
+    ovr_CalcEyePoses(hmdState.HeadPose.ThePose, hmdToEyeViewPose, layer_.RenderPose);
+    Left->updateViewProjection(layer_.RenderPose[Left->eye_]);
+    Right->updateViewProjection(layer_.RenderPose[Right->eye_]);
+  }
 
+  {
+    // Update inputs
+    ovrInputState inputState;
+    if (OVR_SUCCESS(ovr_GetInputState(session_, ovrControllerType_Touch, &inputState)))
+    {
+      if (inputState.Buttons & ovrButton_A || inputState.Buttons & ovrButton_X)
+      {
+        request_start_ = true;
+      }
+
+      for (int hand = 0; hand < 2; hand++) {
+        if (inputState.HandTrigger[hand] < 0.5f)
+          continue;
+
+        auto trackState = ovr_GetTrackingState(session_, ovr_GetPredictedDisplayTime(session_, frameIndex), ovrTrue);
+        auto position = trackState.HandPoses[hand].ThePose.Position;
+        auto origin = trackState.CalibratedOrigin.Position;
+        active_hand_position = glm::vec3(position.x + origin.x + Config::offset.x, position.y + origin.y + Config::offset.y, position.z + origin.z + Config::offset.z);
+      }
+    }
+  }
+
+  // Call sdk
   ovr_BeginFrame(session_, frameIndex);
 }
 
@@ -82,10 +107,3 @@ void Oculus::EndFrame(long long frameIndex)
   ovr_EndFrame(session_, frameIndex, nullptr, &header, numLayers);
 }
 
-glm::vec3 Oculus::GetActiveHand(long long frameIndex)
-{
-  auto trackState = ovr_GetTrackingState(session_, ovr_GetPredictedDisplayTime(session_, frameIndex), ovrTrue);
-  auto position = trackState.HandPoses[0].ThePose.Position;
-  auto origin = trackState.CalibratedOrigin.Position;
-  return glm::vec3(position.x + origin.x + Config::offset.x, position.y + origin.y + Config::offset.y, position.z + origin.z + Config::offset.z);
-}
