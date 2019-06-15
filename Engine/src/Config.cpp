@@ -18,6 +18,8 @@ float Config::perf_overlay_scale = 5.0f;
 
 int Config::anti_aliasing_level = 3;
 
+OVR::Vector3f Config::offset = OVR::Vector3f(0, 0.5, 1.0);
+
 /**
  * Parse and apply a list of program arguments.
  * @param arguments Arguments to apply to config.
