@@ -38,7 +38,7 @@ Game::Game(std::shared_ptr<Window> window) :
   score_center = std::make_unique<GameEntity>(score_center_shape, score_center_texture, score_depth_offset);
   striker_player = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, 1), 0.05f);
   striker_opponent = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, -1), 0.5f);
-  puck = std::make_unique<Puck>(puck_shape, puck_texture, glm::vec3());
+  puck = std::make_unique<Puck>(puck_shape, puck_texture, glm::vec3(0, -0.05, 0));
   camera = std::make_shared<Camera>();
 
   // Change material properties of scoreboard, its not very well lit otherwise
