@@ -3,6 +3,7 @@
 #include "OVR_CAPI_GL.h"
 
 #include "Logger.h"
+#include "src\Config.h"
 #include "Extras/OVR_Math.h"
 #include <glm/gtc/type_ptr.hpp>
 
@@ -51,8 +52,7 @@ void OculusEye::bind()
 
 void OculusEye::updateViewProjection(const ovrPosef pose)
 {
-  OVR::Vector3f Pos2(0, 0.9, 2.0);
-  OVR::Vector3f shiftedEyePos = Pos2 + pose.Position;
+  OVR::Vector3f shiftedEyePos = Config::offset + pose.Position;
 
   OVR::Matrix4f orientation = OVR::Matrix4f(pose.Orientation);
   OVR::Vector3f finalUp = orientation.Transform(OVR::Vector3f(0, 1, 0));

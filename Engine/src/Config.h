@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <Extras\OVR_Math.h>
 
 /**
  * Global game config
@@ -19,6 +20,7 @@ class Config {
   static float perf_overlay_scale;
   static void parse(std::vector<std::string> arguments);
   static int anti_aliasing_level;
+  static OVR::Vector3f offset;
 };
 
 #endif //ENGINE_CONFIG_H
