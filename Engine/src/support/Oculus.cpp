@@ -1,6 +1,7 @@
 #include "Oculus.h"
 #include "Extras/OVR_StereoProjection.h"
 #include "Logger.h"
+#include "src\Config.h"
 
 void OvrLogCallback(uintptr_t userData, int level, const char* message)
 {
@@ -79,4 +80,12 @@ void Oculus::EndFrame(long long frameIndex)
   const ovrLayerHeader* header = &layer_.Header;
   const auto numLayers = 1;
   ovr_EndFrame(session_, frameIndex, nullptr, &header, numLayers);
+}
+
+glm::vec3 Oculus::GetActiveHand(long long frameIndex)
+{
+  auto trackState = ovr_GetTrackingState(session_, ovr_GetPredictedDisplayTime(session_, frameIndex), ovrTrue);
+  auto position = trackState.HandPoses[0].ThePose.Position;
+  auto origin = trackState.CalibratedOrigin.Position;
+  return glm::vec3(position.x + origin.x + Config::offset.x, position.y + origin.y + Config::offset.y, position.z + origin.z + Config::offset.z);
 }

@@ -16,6 +16,7 @@ public:
   void WaitToBeginFrame(long long  frameIndex);
   void BeginFrame(long long  frameIndex);
   void EndFrame(long long  frameIndex);
+  glm::vec3 GetActiveHand(long long  frameIndex);
 
 private:
   ovrSession session_;

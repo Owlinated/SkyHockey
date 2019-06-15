@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
 
       // Update and render game
       oculus->WaitToBeginFrame(frameIndex);
-      game.update(deltaTime);
+      game.update(deltaTime, oculus->GetActiveHand(frameIndex));
 
       oculus->BeginFrame(frameIndex);
       for (auto& renderer : renderers)

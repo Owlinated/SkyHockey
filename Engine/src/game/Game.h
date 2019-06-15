@@ -30,7 +30,7 @@ class Game {
   glm::vec3 score_offset, score_depth_offset;
   int winning_score;
   std::shared_ptr<Camera> camera;
-  void update(float delta_time);
+  void update(float delta_time, glm::vec3 hand_pos);
   void striker_puck_collision_test(std::unique_ptr<Striker> &striker, std::unique_ptr<Puck> &puck);
   void goal_test(std::unique_ptr<Puck> &puck);
   static bool request_start;
