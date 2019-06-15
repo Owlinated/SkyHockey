@@ -190,7 +190,7 @@ void Game::goal_test(std::unique_ptr<Puck> &puck) {
  * Update the game state.
  * @param delta_time Time in seconds since last update.
  */
-void Game::update(float delta_time) {
+void Game::update(float delta_time, glm::vec3 hand_pos) {
   static auto total_time = 0.0f;
   total_time += delta_time;
 
@@ -200,6 +200,9 @@ void Game::update(float delta_time) {
     camera->start();
   }
 
+  striker_player->target_location = glm::vec3(hand_pos.x, 0.0f, hand_pos.z);
+
+  /* TODO Add an option to replace ai with mouse player
   const auto mouse_speed = 0.001f;
   double mouse_x, mouse_y, mid_x = window_->width / 2, mid_y = window_->height / 2;
   glfwGetCursorPos(window_->handle, &mouse_x, &mouse_y);
@@ -207,6 +210,7 @@ void Game::update(float delta_time) {
 
   // update player movement
   striker_player->target_location += glm::vec3((mouse_x - mid_x) * mouse_speed, 0, (mouse_y - mid_y) * mouse_speed);
+  */
 
   // update "ai" movement
   auto location_difference = glm::normalize(puck->location - striker_opponent->location);
