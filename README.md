@@ -87,7 +87,7 @@ Don't you just love setting up C++ projects? Here we go.
 
 ### Preparation
 
-1. Setup your C++ toolchain of choice. (Tested with MinGW x86_64-6.1.0-posix-seh-rt_v5-rev1)
+1. Setup your C++ compiler of choice.
 2. Install [CMake](https://cmake.org/download/) (Tested with 3.10.3)
 3. Install [Python](https://www.python.org/downloads/) for Conan (Tested with 3.6)
 4. Install [Conan](https://www.conan.io/downloads.html) as admin: `pip install conan`
