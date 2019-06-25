@@ -22,7 +22,7 @@ class Game {
   void reset();
  public:
   explicit Game(std::shared_ptr<Window> window);
-  std::unique_ptr<GameEntity> table, score_board, score_center;
+  std::unique_ptr<GameEntity> room, floor, table, score_board, score_center;
   std::vector<std::unique_ptr<GameEntity>> scores_player, scores_opponent;
   std::unique_ptr<Puck> puck;
   std::unique_ptr<Striker> striker_player, striker_opponent;
