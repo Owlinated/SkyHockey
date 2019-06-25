@@ -97,13 +97,8 @@ Don't you just love setting up C++ projects? Here we go.
 
 1. Clone the repository: `git clone --recurse-submodules https://github.com/Owlinated/SkyHockey`
 2. Navigate into directory: `cd SkyHockey/Engine`
-3. Get dependencies: `conan install ./ --build`  
-Depending on your environment you might want to specify your compiler:  
-E.g. `-s compiler=gcc -s compiler.version=6.1`
+3. Get dependencies: `conan install . --build`
 
 ### Build
 
-1. Create build files: `cmake ./`  
-Again, you might want to specify your profile:  
-E.g. `-G "MinGW Makefiles"`
-2. Build the project: `cmake --build ./ --target Engine`
+1. Build with conan `conan build .`
