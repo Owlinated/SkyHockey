@@ -18,6 +18,7 @@ Game::Game(std::shared_ptr<Window> window) :
     color_opponent_(0.5, 0, 0),
     winning_score(7),
     running(false){
+  auto room_texture = std::make_shared<TexturePNG>("room.png", true);
   auto table_texture = std::make_shared<TexturePNG>("table.png", true);
   auto striker_texture = std::make_shared<TexturePNG>("striker.png", true);
   auto puck_texture = std::make_shared<TexturePNG>("puck.png", true);
@@ -25,6 +26,8 @@ Game::Game(std::shared_ptr<Window> window) :
   auto score_center_texture = std::make_shared<TexturePNG>("score_center.png", true);
   auto score_left_right_texture = std::make_shared<TexturePNG>("score_left_right.png", true);
 
+  auto room_shape = obj_loader_.loadShape("Room");
+  auto floor_shape = obj_loader_.loadShape("Floor");
   auto table_shape = obj_loader_.loadShape("Table");
   auto striker_shape = obj_loader_.loadShape("Striker");
   auto puck_shape = obj_loader_.loadShape("Puck");
@@ -33,6 +36,8 @@ Game::Game(std::shared_ptr<Window> window) :
   auto score_left_shape = obj_loader_.loadShape("ScoreLeft");
   auto score_right_shape = obj_loader_.loadShape("ScoreRight");
 
+  room = std::make_unique<GameEntity>(room_shape, room_texture, glm::vec3());
+  floor = std::make_unique<GameEntity>(floor_shape, puck_texture, glm::vec3());
   table = std::make_unique<GameEntity>(table_shape, table_texture, glm::vec3());
   score_board = std::make_unique<GameEntity>(score_board_shape, score_board_texture, glm::vec3());
   score_center = std::make_unique<GameEntity>(score_center_shape, score_center_texture, score_depth_offset);
@@ -52,7 +57,7 @@ Game::Game(std::shared_ptr<Window> window) :
   striker_opponent->material.diffuse_multiplier *= color_opponent_;
 
   entities = std::vector<GameEntity*>{
-    table.get(), score_board.get(), score_center.get(),
+    room.get(), floor.get(), table.get(), score_board.get(), score_center.get(),
     striker_player.get(), striker_opponent.get(), puck.get()
   };
 

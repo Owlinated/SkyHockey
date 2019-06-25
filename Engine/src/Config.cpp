@@ -18,7 +18,8 @@ float Config::perf_overlay_scale = 5.0f;
 
 int Config::anti_aliasing_level = 3;
 
-OVR::Vector3f Config::offset = OVR::Vector3f(0, 0.5, 1.0);
+// Table is 0.8m above floor. Assuming eye height of 1.7m, gives us eye offset height of 0.9m.
+OVR::Vector3f Config::offset = OVR::Vector3f(0, 0.9, 1.5);
 
 /**
  * Parse and apply a list of program arguments.
