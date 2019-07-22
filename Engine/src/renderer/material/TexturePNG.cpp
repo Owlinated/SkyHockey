@@ -17,6 +17,12 @@ TexturePNG::TexturePNG(const std::string& image_path, bool mipmap) {
   png_init_io(png, fp);
   png_read_info(png, info);
 
+  // Add alpha channel if png is RGB
+  if (png_get_color_type(png, info) == PNG_COLOR_TYPE_RGB) {
+    png_set_add_alpha(png, 0xff, PNG_FILLER_AFTER);
+    png_read_update_info(png, info);
+  }
+
   const auto width = png_get_image_width(png, info);
   const auto height = png_get_image_height(png, info);
 
