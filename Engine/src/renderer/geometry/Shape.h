@@ -2,7 +2,7 @@
 #define ENGINE_SHAPE_H
 
 #include <vector>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 

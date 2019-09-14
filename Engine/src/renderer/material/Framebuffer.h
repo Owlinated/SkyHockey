@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include "Texture.h"
 #include "IFramebuffer.h"
 

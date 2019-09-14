@@ -1,7 +1,7 @@
 #ifndef ENGINE_WINDOW_H
 #define ENGINE_WINDOW_H
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <src/renderer/material/IFramebuffer.h>
 

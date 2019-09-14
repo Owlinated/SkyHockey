@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <stdexcept>
 #include "Texture.h"
 

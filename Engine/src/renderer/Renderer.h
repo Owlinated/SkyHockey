@@ -4,7 +4,7 @@
 #include <src/renderer/material/Shader.h>
 #include <src/renderer/geometry/Shape.h>
 #include <src/renderer/geometry/ObjLoader.h>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <src/game/Camera.h>

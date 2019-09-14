@@ -2,7 +2,7 @@
 #define TEXTURE_HPP
 
 #include <memory>
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 /**
  * Holds a color texture.

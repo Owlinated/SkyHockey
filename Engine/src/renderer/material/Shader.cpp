@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <sstream>
 #include <cstring>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <map>
 #include <src/support/Logger.h>
 #include "Shader.h"

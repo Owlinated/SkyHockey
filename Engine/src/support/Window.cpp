@@ -1,5 +1,5 @@
 #include <iostream>
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <src/Config.h>
 #include "Window.h"
@@ -40,8 +40,8 @@ Window::Window() {
   glfwPollEvents();
   glfwSetCursorPos(handle, width/2, height/2);
 
-  if (glewInit() != GLEW_OK) {
-    Logger::error("Failed to initialize GLEW.");
+  if(!gladLoadGL()) {
+    Logger::error("Failed to initialize GLAD.");
   }
 }
 
