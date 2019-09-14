@@ -25,18 +25,4 @@ Engine/conanbuildinfo\.txt
 Engine/conaninfo\.txt
 
 # Output
-Engine/bin/
-*.cbp
-*.a
-**/\.vscode/
-*.cmake
-**/install_manifest\.txt
-**/Debug
-**/Release
-*.vcxproj
-*.vcxproj.*
-*.lib
-*.pdb
-*.sln
-conan.lock
-graph_info.json
+build/

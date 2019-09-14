@@ -4,7 +4,7 @@ set (CMAKE_CXX_STANDARD 14)
 set(PROJECT_NAME "Engine")
 project(${PROJECT_NAME})
 
-include(conanbuildinfo.cmake)
+include(build/conanbuildinfo.cmake)
 conan_basic_setup()
 
 find_package(OpenGL REQUIRED)
