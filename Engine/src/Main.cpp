@@ -16,7 +16,7 @@
 /**
  * OpenGL callback for warnings and errors.
  */
-void messageCallback(GLenum source,
+void KHRONOS_APIENTRY messageCallback(GLenum source,
                      GLenum type,
                      GLuint id,
                      GLenum severity,
@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
 
     // Setup input callback
     glfwSetKeyCallback(window->handle, keyCallback);
-
+  	
     // Create game and renderer
     Renderer renderer(window);
     Game game(window);

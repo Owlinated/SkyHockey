@@ -5,18 +5,22 @@
 #include "Window.h"
 #include "Logger.h"
 
+void errorCallback(int code, const char* message) {
+	Logger::warn(std::string(message));
+}
+
 /**
  * Initialize a new window.
  */
 Window::Window() {
-  if(!glfwInit())
-  {
+  if(!glfwInit()) {
     Logger::error("Failed to initialize GLFW.");
   }
+  glfwSetErrorCallback(errorCallback);
 
   glfwWindowHint(GLFW_SAMPLES, 0);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   if (Config::full_screen) {
@@ -40,8 +44,11 @@ Window::Window() {
   glfwPollEvents();
   glfwSetCursorPos(handle, width/2, height/2);
 
-  if(!gladLoadGL()) {
+  if(!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) {
     Logger::error("Failed to initialize GLAD.");
+  }
+  if(GLVersion.major < 4 && GLVersion.minor < 6) {
+	Logger::error("OpenGL version too low. Required: 4.6. Found: " + std::to_string(GLVersion.major) + "." + std::to_string(GLVersion.minor));
   }
 }
 
