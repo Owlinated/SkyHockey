@@ -1,7 +1,7 @@
 #ifndef ENGINE_OCULUS_EYE_H
 #define ENGINE_OCULUS_EYE_H
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <src/renderer/material/IFramebuffer.h>
 #include "OVR_CAPI.h"
 #include "src/renderer/ICamera.h"
