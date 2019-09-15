@@ -7,6 +7,7 @@ class Engine(ConanFile):
                 "libpng/1.6.36@bincrafters/stable",
                 "tinyobjloader/1.0.7@flostellbrink/stable"
                 )
+    settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
 
     def configure(self):
