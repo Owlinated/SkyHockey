@@ -9,13 +9,7 @@ conan_basic_setup()
 
 find_package(OpenGL REQUIRED)
 
-# Compile non-conan dependencies
-add_subdirectory(lib)
-
-include_directories(
-        lib/tinyobjloader/
-        .
-)
+include_directories(.)
 
 add_executable(${PROJECT_NAME}
         src/Main.cpp
@@ -44,7 +38,6 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         ${CONAN_LIBS}
         ${OPENGL_LIBRARY}
-        tiny
         )
 
 # Copy shaders to build directory

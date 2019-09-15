@@ -91,7 +91,9 @@ Don't you just love setting up C++ projects? Here we go.
 2. Install [CMake](https://cmake.org/download/) (Tested with 3.10.3)
 3. Install [Python](https://www.python.org/downloads/) for Conan (Tested with 3.6)
 4. Install [Conan](https://www.conan.io/downloads.html) as admin: `pip install conan`
-5. Add Conan remote: `conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan True`
+5. Add Conan remotes:
+    - `conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan True`
+    - `conan remote add flostellbrink https://api.bintray.com/conan/flostellbrink/public True`
 
 ### Dependencies
 
