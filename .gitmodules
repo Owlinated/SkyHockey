@@ -1,3 +1,0 @@
-[submodule "Engine/lib/tinyobjloader"]
-	path = Engine/lib/tinyobjloader
-	url = https://github.com/syoyo/tinyobjloader
