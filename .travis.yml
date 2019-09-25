@@ -32,7 +32,6 @@ matrix:
 before_install:
   - travis_retry pip3 install conan
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan True
-  - conan remote add flostellbrink https://api.bintray.com/conan/flostellbrink/public True
 
 install:
   - cd "${TRAVIS_BUILD_DIR}/Engine"
