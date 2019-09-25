@@ -35,7 +35,7 @@ before_install:
 
 install:
   - cd "${TRAVIS_BUILD_DIR}/Engine"
-  - travis_retry conan install . --build --install-folder build
+  - travis_retry conan install . --build missing --install-folder build
 
 script:
   - cd "${TRAVIS_BUILD_DIR}/Engine"
