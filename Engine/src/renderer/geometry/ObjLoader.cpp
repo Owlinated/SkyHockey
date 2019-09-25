@@ -17,9 +17,8 @@
  * @param path Path to .obj file.
  */
 ObjLoader::ObjLoader(const std::string& path) {
-  std::string warn;
   std::string err;
-  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, ("res/" +  path).c_str());
+  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, ("res/" +  path).c_str());
 
   if (!ret) {
     Logger::error("Could not parse obj file: " + err);

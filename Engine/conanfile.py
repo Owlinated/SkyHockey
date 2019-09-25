@@ -5,7 +5,7 @@ class Engine(ConanFile):
                 "glad/0.1.29@bincrafters/stable",
                 "glfw/3.3@bincrafters/stable",
                 "libpng/1.6.36@bincrafters/stable",
-                "tinyobjloader/1.0.7@flostellbrink/stable"
+                "tinyobjloader/1.0.6@_/_"
                 )
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
