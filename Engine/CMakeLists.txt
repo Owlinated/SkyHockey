@@ -9,6 +9,9 @@ conan_basic_setup()
 
 find_package(OpenGL REQUIRED)
 
+# Add OpenXR
+add_subdirectory (lib/openxr)
+
 include_directories(.)
 
 add_executable(${PROJECT_NAME}
