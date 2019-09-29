@@ -7,11 +7,11 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <src/game/Camera.h>
 #include <src/renderer/material/Texture.h>
 #include <src/game/Game.h>
 #include <src/renderer/material/Framebuffer.h>
 #include <src/renderer/material/Light.h>
+#include <src/renderer/ICamera.h>
 #include "src/support/Window.h"
 #include "RenderEntity.h"
 
@@ -24,7 +24,8 @@ class Renderer {
   float shadow_clip_near_, shadow_clip_far_;
   float total_time_;
 
-  std::shared_ptr<Window> window_;
+  std::shared_ptr<IFramebuffer> window_;
+  std::shared_ptr<ICamera> camera_;
   Framebuffer shadow_map_framebuffer_, deferred_framebuffer_, forward_framebuffer_, motion_blur_framebuffer_,
       horizontal_blur_framebuffer_, vertical_blur_framebuffer_, aliasing_blur_framebuffer_;
   Light light_;
@@ -49,7 +50,7 @@ class Renderer {
   static void renderPerfOverlay(IFramebuffer &output, float total_time);
   static void renderAliasingBlur(std::shared_ptr<Texture> &color, IFramebuffer &output);
  public:
-  explicit Renderer(std::shared_ptr<Window> window);
+  explicit Renderer(std::shared_ptr<IFramebuffer> window, std::shared_ptr<ICamera> camera);
   void renderFrame(Game &game, float delta_time);
 };
 

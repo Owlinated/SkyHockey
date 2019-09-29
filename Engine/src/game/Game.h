@@ -29,7 +29,7 @@ class Game {
   std::vector<GameEntity*> entities;
   glm::vec3 score_offset, score_depth_offset;
   int winning_score;
-  Camera camera;
+  std::shared_ptr<Camera> camera;
   void update(float delta_time);
   void striker_puck_collision_test(std::unique_ptr<Striker> &striker, std::unique_ptr<Puck> &puck);
   void goal_test(std::unique_ptr<Puck> &puck);

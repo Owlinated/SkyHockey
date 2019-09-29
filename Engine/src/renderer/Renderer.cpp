@@ -9,8 +9,9 @@
  * Create a renderer.
  * @param window Window to display output to.
  */
-Renderer::Renderer(std::shared_ptr<Window> window) :
+Renderer::Renderer(std::shared_ptr<IFramebuffer> window, std::shared_ptr<ICamera> camera) :
     window_(window),
+    camera_(camera),
     // Sets x, y, and z to a/2 + 1/2. Moving them from [-1,1] to [0,1].
     window_matrix_(
         0.5, 0.0, 0.0, 0.0,
@@ -29,17 +30,17 @@ Renderer::Renderer(std::shared_ptr<Window> window) :
     shadow_map_framebuffer_(
         shadow_width_, shadow_height_, 1, true, SamplingMode::Linear, Precision::Float32, "shadowmap"),
     deferred_framebuffer_(
-        window->width, window->height, 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
+        window->getWidth(), window->getHeight(), 4, true, SamplingMode::Nearest, Precision::Float32, "deferred"),
     forward_framebuffer_(
-        window->width, window->height, 1, true, SamplingMode::Nearest, Precision::Pos16, "forward"),
+        window->getWidth(), window->getHeight(), 1, true, SamplingMode::Nearest, Precision::Pos16, "forward"),
     motion_blur_framebuffer_(
-        window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
+        window->getWidth(), window->getHeight(), 1, false, SamplingMode::Nearest, Precision::Pos16, "motion_blur"),
     horizontal_blur_framebuffer_(
         shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "horizontal_blur"),
     vertical_blur_framebuffer_(
         shadow_width_, shadow_height_, 1, false, SamplingMode::Linear, Precision::Float32, "vertical_blur"),
     aliasing_blur_framebuffer_(
-        window->width, window->height, 1, false, SamplingMode::Nearest, Precision::Pos16, "aliasing_blur") {
+        window->getWidth(), window->getHeight(), 1, false, SamplingMode::Nearest, Precision::Pos16, "aliasing_blur") {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   glDisable(GL_MULTISAMPLE);
@@ -71,8 +72,6 @@ void Renderer::renderFrame(Game &game, float delta_time) {
   if (Config::perf_overlay) {
     renderPerfOverlay(*window_, delta_time);
   }
-
-  glfwSwapBuffers(window_->handle);
 }
 
 /**
@@ -81,7 +80,8 @@ void Renderer::renderFrame(Game &game, float delta_time) {
  * @param delta_time Time in seconds since last frame.
  */
 void Renderer::renderForward(Game &game, float delta_time) {
-  auto view_projection = game.camera.projection * game.camera.view;
+  auto view = camera_->getView();
+  auto view_projection = camera_->getProjection() * view;
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
   auto depth_view_projection_window = window_matrix_ * depth_view_projection;
   auto depth_attenuation = shadow_clip_far_ - shadow_clip_near_;
@@ -102,7 +102,7 @@ void Renderer::renderForward(Game &game, float delta_time) {
     auto depth_model_view_projection_window = depth_view_projection_window * model;
 
     forward_shader.bind(model, "u.model");
-    forward_shader.bind(game.camera.view, "u.view");
+    forward_shader.bind(view, "u.view");
     forward_shader.bind(model_view_projection, "u.model_view_projection");
     forward_shader.bind(depth_model_view_projection_window, "u.depth_model_view_projection_window");
     forward_shader.bind(depth_attenuation, "u.depth_attenuation");
@@ -130,7 +130,8 @@ void Renderer::renderForward(Game &game, float delta_time) {
  * @param delta_time Time in seconds since last frame.
  */
 void Renderer::renderDeferred(Game &game, float delta_time) {
-  auto view_projection = game.camera.projection * game.camera.view;
+  auto view = camera_->getView();
+  auto view_projection = camera_->getProjection() * view;
   auto depth_view_projection = depth_projection_matrix_ * depth_view_matrix_;
   auto depth_view_projection_window = window_matrix_ * depth_view_projection;
   auto depth_attenuation = shadow_clip_far_ - shadow_clip_near_;
@@ -163,7 +164,7 @@ void Renderer::renderDeferred(Game &game, float delta_time) {
 
   static Shader deferred_render_shader("Quad.vert", "DeferredRender.frag");
   deferred_render_shader.use();
-  deferred_render_shader.bind(game.camera.view, "u.view");
+  deferred_render_shader.bind(view, "u.view");
   deferred_render_shader.bind(depth_view_projection_window, "u.depth_view_projection_window");
   deferred_render_shader.bind(depth_attenuation, "u.depth_attenuation");
   deferred_render_shader.bind(light_.position_worldspace, "u.light.position_worldspace");

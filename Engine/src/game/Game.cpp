@@ -39,6 +39,7 @@ Game::Game(std::shared_ptr<Window> window) :
   striker_player = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, 1), 0.05f);
   striker_opponent = std::make_unique<Striker>(striker_shape, striker_texture, glm::vec3(0, 0, -1), 0.5f);
   puck = std::make_unique<Puck>(puck_shape, puck_texture, glm::vec3());
+  camera = std::make_shared<Camera>();
 
   // Change material properties of scoreboard, its not very well lit otherwise
   score_board->material.ambient_multiplier = glm::vec3(0.9, 0.9, 0.9);
@@ -154,7 +155,7 @@ void Game::goal_test(std::unique_ptr<Puck> &puck) {
 
       request_start = false;
       running = false;
-      camera.stop();
+      camera->stop();
     }
   } else if (puck->location.z > 1.2f) {
     score_opponent_ ++;
@@ -180,7 +181,7 @@ void Game::goal_test(std::unique_ptr<Puck> &puck) {
 
       request_start = false;
       running = false;
-      camera.stop();
+      camera->stop();
     }
   }
 }
@@ -196,7 +197,7 @@ void Game::update(float delta_time) {
   if (!running && request_start) {
     running = true;
     reset();
-    camera.start();
+    camera->start();
   }
 
   const auto mouse_speed = 0.001f;
@@ -218,7 +219,7 @@ void Game::update(float delta_time) {
   }
 
   // update entities
-  camera.update(delta_time);
+  camera->update(delta_time);
   for (auto &entity: entities) {
     entity->update(delta_time);
   }
