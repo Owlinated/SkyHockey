@@ -1,4 +1,4 @@
-# SkyHockey - Air Hockey in Space [![Build Status](https://travis-ci.org/flostellbrink/SkyHockey.svg?branch=master)](https://travis-ci.org/flostellbrink/SkyHockey)
+# SkyHockey - Air Hockey in Space
 
 This is a small physics based Air Hockey game. The project is part of the 2018 CG Course DAT205/DIT226 at Chalmers.
 

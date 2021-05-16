@@ -1,0 +1,52 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: "0 0 * * 5"
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        working-directory: ./Engine
+        run: |
+          sudo apt install libgl-dev
+          pip3 install conan
+          conan install . --build missing --install-folder build
+      - name: Build game
+        working-directory: ./Engine
+        run: conan build . --build-folder build
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        working-directory: ./Engine
+        run: |
+          pip3 install conan
+          conan install . --build missing --install-folder build
+      - name: Build game
+        working-directory: ./Engine
+        run: conan build . --build-folder build
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        working-directory: ./Engine
+        run: |
+          pip3 install conan
+          conan install . --build missing --install-folder build
+      - name: Build game
+        working-directory: ./Engine
+        run: conan build . --build-folder build
