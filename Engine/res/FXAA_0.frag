@@ -1,4 +1,4 @@
-#version 420
+#version 410
 // Adapted from: https://github.com/NVIDIAGameWorks/GraphicsSamples/blob/master/samples/es3-kepler/FXAA/assets/shaders/FXAA_Default.frag
 
 precision highp float;

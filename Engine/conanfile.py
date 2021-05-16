@@ -12,7 +12,7 @@ class Engine(ConanFile):
     generators = "cmake"
 
     def configure(self):
-        self.options["glad"].gl_version = "4.6"
+        self.options["glad"].gl_version = "4.1"
 
     def build(self):
         cmake = CMake(self)

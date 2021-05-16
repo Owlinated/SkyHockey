@@ -58,7 +58,6 @@ Framebuffer::Framebuffer(int width,
 
     if (sample == SamplingMode::Mipmap) {
       glGenerateMipmap(GL_TEXTURE_2D);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, 16.0f);
     }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, maxFilter);
@@ -67,7 +66,6 @@ Framebuffer::Framebuffer(int width,
 
     std::stringstream label;
     label << fb_name << texture_id;
-    glObjectLabel(GL_TEXTURE, texture_handle, -1, label.str().c_str());
 
     textures.push_back(std::make_shared<Texture>(texture_handle, width, height));
   }

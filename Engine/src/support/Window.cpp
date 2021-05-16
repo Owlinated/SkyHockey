@@ -20,7 +20,8 @@ Window::Window() {
 
   glfwWindowHint(GLFW_SAMPLES, 0);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   if (Config::full_screen) {
@@ -46,9 +47,6 @@ Window::Window() {
 
   if(!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) {
     Logger::error("Failed to initialize GLAD.");
-  }
-  if(GLVersion.major < 4 && GLVersion.minor < 6) {
-	Logger::error("OpenGL version too low. Required: 4.6. Found: " + std::to_string(GLVersion.major) + "." + std::to_string(GLVersion.minor));
   }
 }
 
