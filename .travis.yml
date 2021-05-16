@@ -6,16 +6,30 @@ python: "3.7.1"
 matrix:
   include:
     - env: CC=clang-4.0 CXX=clang++-4.0
-      addons: { apt: { packages: ["clang-4.0"] } }
+      addons: { apt: { packages: ["clang-4.0", libgl1-mesa-dev] } }
 
     - env: CC=clang-5.0 CXX=clang++-5.0
-      addons: &defaults { apt: { packages: ["clang-5.0"] } }
+      addons: &defaults { apt: { packages: ["clang-5.0", libgl1-mesa-dev] } }
 
     - env: CC=gcc-6 CXX=g++-6
-      addons: { apt: { packages: ["gcc-6", "g++-6"], sources: ["ubuntu-toolchain-r-test"] } }
+      addons:
+        {
+          apt:
+            {
+              packages: ["gcc-6", "g++-6", "libgl1-mesa-dev"],
+              sources: ["ubuntu-toolchain-r-test"],
+            },
+        }
 
     - env: CC=gcc-7 CXX=g++-7
-      addons: { apt: { packages: ["gcc-7", "g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
+      addons:
+        {
+          apt:
+            {
+              packages: ["gcc-7", "g++-7", "libgl1-mesa-dev"],
+              sources: ["ubuntu-toolchain-r-test"],
+            },
+        }
 
     - os: osx
       osx_image: xcode8.3
