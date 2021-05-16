@@ -3,6 +3,7 @@
 This is a small physics based Air Hockey game. The project is part of the 2018 CG Course DAT205/DIT226 at Chalmers.
 
 The following features are relevant for the course:
+
 - Game
 - Deferred Shading
 - Variance Shadow Mapping
@@ -39,7 +40,7 @@ This software contains source code provided by NVIDIA Corporation.
 ## Controls
 
 | Key   | Action                                              |
-|-------|-----------------------------------------------------|
+| ----- | --------------------------------------------------- |
 | SPACE | Start the game.                                     |
 | R     | Change between deferred and forward rendering.      |
 | S     | Toggle animated background on and off.              |
@@ -59,22 +60,22 @@ The process for deferred rendering involves a few intermediate states.
 Let's look at the actual steps:
 
 1. The Shadow map is rendered from the light's perspective.
-    1. 1 Channel: The depth value is normalized and stored.
-        ![Depth](Screenshots/deferred_0_depth.png?raw=true "Depth")
-    2. 1 Channel: The square of the depth is also normalized and stored.
-        ![DepthSquared](Screenshots/deferred_0_depth_squared.png?raw=true "DepthSquared")
-    3. The entire texture is blurred to enable smooth shadows with VSM.
+   1. 1 Channel: The depth value is normalized and stored.
+      ![Depth](Screenshots/deferred_0_depth.png?raw=true "Depth")
+   2. 1 Channel: The square of the depth is also normalized and stored.
+      ![DepthSquared](Screenshots/deferred_0_depth_squared.png?raw=true "DepthSquared")
+   3. The entire texture is blurred to enable smooth shadows with VSM.
 2. All objects properties are collected in 4 textures. These are the stored channels:
-    1. 1 Channel: The objects ids, for looking up material properties:
-        ![Ids](Screenshots/deferred_1_id.png?raw=true "Ids")
-    2. 3 Channels: The albedo colors, contain the object textures:
-        ![Colors](Screenshots/deferred_1_color.png?raw=true "Colors")
-    3. 3 Channels: The worldspace coordinates, for shadow mapping:
-        ![Coords](Screenshots/deferred_1_coords.png?raw=true "Coords")
-    4. 3 Channels: The surface normals, for lighting:
-        ![Normals](Screenshots/deferred_1_normals.png?raw=true "Normals")
-    5. 2 Channels: The camera space object velocity, for motion blur:
-        ![Velocities](Screenshots/deferred_1_velocity.png?raw=true "Velocities")
+   1. 1 Channel: The objects ids, for looking up material properties:
+      ![Ids](Screenshots/deferred_1_id.png?raw=true "Ids")
+   2. 3 Channels: The albedo colors, contain the object textures:
+      ![Colors](Screenshots/deferred_1_color.png?raw=true "Colors")
+   3. 3 Channels: The worldspace coordinates, for shadow mapping:
+      ![Coords](Screenshots/deferred_1_coords.png?raw=true "Coords")
+   4. 3 Channels: The surface normals, for lighting:
+      ![Normals](Screenshots/deferred_1_normals.png?raw=true "Normals")
+   5. 2 Channels: The camera space object velocity, for motion blur:
+      ![Velocities](Screenshots/deferred_1_velocity.png?raw=true "Velocities")
 3. The information from all textures is composited into a single texture.
 4. Motion blur is applied to the rendered image.
 5. FXAA is applied to hide aliasing artifacts.
@@ -91,12 +92,10 @@ Don't you just love setting up C++ projects? Here we go.
 2. Install [CMake](https://cmake.org/download/) (Tested with 3.10.3)
 3. Install [Python](https://www.python.org/downloads/) for Conan (Tested with 3.6)
 4. Install [Conan](https://www.conan.io/downloads.html) as admin: `pip install conan`
-5. Add Conan remote:
-    - `conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan True`
 
 ### Dependencies
 
-1. Clone the repository: `git clone --recurse-submodules https://github.com/Owlinated/SkyHockey`
+1. Clone the repository
 2. Navigate into directory: `cd SkyHockey/Engine`
 3. Get dependencies: `conan install . --build missing --install-folder build`
 
